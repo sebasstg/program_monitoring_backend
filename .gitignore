@@ -1,2 +1,4 @@
 # Project exclude paths
 /target/
+/.idea/
+/program_monitoring_backend.iml

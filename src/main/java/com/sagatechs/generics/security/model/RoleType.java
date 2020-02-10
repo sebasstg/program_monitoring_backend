@@ -2,22 +2,24 @@ package com.sagatechs.generics.security.model;
 
 public enum RoleType {
 
-	ADMINISTRADOR("Administrador"), USUARIO("Usuario"),PASSENGER("Pasajero");
-
+    SUPER_ADMINISTRADOR("Super Administrador"),
+	ADMINISTRADOR("Administrador"),
+	MONITOR_DE_PROGRAMAS("Monitor de Programas"),
+	EJECUTOR_PROYECTOS("Ejecutaro de Proyectos");
 
 
     RoleType(String label) {
-		this.label = label;
-	}
+        this.label = label;
+    }
 
-	private String label;
+    private String label;
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public void setLabel(String label) {
-		this.label = label;
-	}
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
 }

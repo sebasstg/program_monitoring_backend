@@ -5,6 +5,7 @@ import com.sagatechs.generics.persistence.model.State;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.NaturalId;
+import org.unhcr.programMonitoring.model.ProjectImplementer;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -63,6 +64,10 @@ public class User extends BaseEntity<Long> {
 
     @OneToMany(mappedBy = "user")
     private Set<RoleAssigment> roleAssigments = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY,optional = true)
+    @JoinColumn(name = "project_implementor_id")
+    private ProjectImplementer projectImplementer;
 
     @Override
     public Long getId() {
@@ -215,5 +220,13 @@ public class User extends BaseEntity<Long> {
                 ", email='" + email + '\'' +
                 ", state=" + state +
                 '}';
+    }
+
+    public ProjectImplementer getProjectImplementer() {
+        return projectImplementer;
+    }
+
+    public void setProjectImplementer(ProjectImplementer projectImplementer) {
+        this.projectImplementer = projectImplementer;
     }
 }

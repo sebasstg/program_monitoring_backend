@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
+import java.util.List;
 
 
 @SuppressWarnings("WeakerAccess")
@@ -42,17 +43,19 @@ public class AppDataConfigLlenadoAutomatico {
     AppConfigurationDao appConfigurationDao;
 
 
+    private Role roleSuperAdministrador;
     private Role roleAdministrador;
+    private Role roleMonitorProgramas;
+    private Role roleEjecutorProyectos;
 
-    private Role roleUsuario;
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private Role rolePasajero;
 
     @PostConstruct
     private void init() {
         LOGGER.debug("Iniciando llenado automatico");
         this.createAppConfigs();
+        this.cargarRoles();
+        this.cargarUsuarios();
         LOGGER.debug("Terminado llenado automático");
     }
 
@@ -86,20 +89,51 @@ public class AppDataConfigLlenadoAutomatico {
 
     @SuppressWarnings("unused")
     private void cargarUsuarios() {
+        byte[] pass = this.securityUtils.hashPasswordByte("1234", UserService.salt);
+        User superAdministrador = new User();
+        superAdministrador.setUsername("superadministrador");
+        superAdministrador.setPassword(pass);
+        superAdministrador.setState(State.ACTIVE);
+        superAdministrador.setEmail("superadministrador@yopmail.com");
+        superAdministrador.addRole(roleSuperAdministrador);
+        this.instantiateUser(superAdministrador);
 
+        User administrador = new User();
+        administrador.setUsername("administrador");
+        superAdministrador.setPassword(pass);
+        administrador.setState(State.ACTIVE);
+        administrador.setEmail("administrador@yopmail.com");
+        administrador.addRole(roleAdministrador);
+        this.instantiateUser(administrador);
 
+        User monitorProgramas = new User();
+        monitorProgramas.setUsername("monitor");
+        superAdministrador.setPassword(pass);
+        monitorProgramas.setState(State.ACTIVE);
+        monitorProgramas.setEmail("monitor@yopmail.com");
+        monitorProgramas.addRole(roleMonitorProgramas);
+        this.instantiateUser(monitorProgramas);
+
+        User ejecutorProyectos = new User();
+        ejecutorProyectos.setUsername("ejecutor");
+        superAdministrador.setPassword(pass);
+        ejecutorProyectos.setState(State.ACTIVE);
+        ejecutorProyectos.setEmail("ejecutor@yopmail.com");
+        ejecutorProyectos.addRole(roleEjecutorProyectos);
+        this.instantiateUser(ejecutorProyectos);
     }
 
 
     @SuppressWarnings("unused")
     private void cargarRoles() {
-
+        roleSuperAdministrador = new Role(RoleType.SUPER_ADMINISTRADOR, State.ACTIVE);
+        this.instantiateRole(roleSuperAdministrador);
         roleAdministrador = new Role(RoleType.ADMINISTRADOR, State.ACTIVE);
         this.instantiateRole(roleAdministrador);
-        roleUsuario = new Role(RoleType.USUARIO, State.ACTIVE);
-        this.instantiateRole(roleUsuario);
-        rolePasajero = new Role(RoleType.PASSENGER, State.ACTIVE);
-        this.instantiateRole(rolePasajero);
+        roleMonitorProgramas = new Role(RoleType.MONITOR_DE_PROGRAMAS, State.ACTIVE);
+        this.instantiateRole(roleMonitorProgramas);
+        roleEjecutorProyectos = new Role(RoleType.EJECUTOR_PROYECTOS, State.ACTIVE);
+        this.instantiateRole(roleEjecutorProyectos);
 
     }
 
@@ -136,4 +170,6 @@ public class AppDataConfigLlenadoAutomatico {
             appConfigurationDao.save(appConfigAppURL);
         }
     }
+
+
 }

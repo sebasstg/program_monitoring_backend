@@ -4,7 +4,7 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://www.jboss.org/schema/jbossas
     http://www.jboss.org/schema/jbossas/jboss-web_7_2.xsd" version="1">
-    <context-root>sagaintertaxi</context-root>
+    <context-root>program_monitoring</context-root>
     <security-domain>jaspitest</security-domain>
 
 </jboss-web>
