@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+				xmlns:h="http://java.sun.com/jsf/html"
+				xmlns:f="http://java.sun.com/jsf/core"
+				xmlns:ui="http://java.sun.com/jsf/facelets"
+				xmlns:p="http://primefaces.org/ui"
+				template="#{layoutMB.template}">
+
+	<ui:define name="metadata">
+		<!-- <ui:param name="title" value="Monitoreo" /> -->
+		<!-- Automatic create breadCrumb and page title when param 'title' is provided. -->
+
+		<style type="text/css">
+</style>
+
+	</ui:define>
+
+	<ui:define name="description">
+Configuración General del Sistema
+	</ui:define>
+
+	<ui:define name="body">
+
+		<h:form id="form">
+			<p:growl id="msgs" showDetail="false" />
+			<p:panel>
+
+				<p:dataTable id="confTable" var="conf"
+					value="#{appConfigView.appConfigurations}" editable="true"
+					style="margin-bottom:20px">
+					<f:facet name="header">
+            Configuración
+        </f:facet>
+
+					<p:ajax event="rowEdit" listener="#{appConfigView.onRowEdit}"
+						update=":form:msgs" />
+					<p:ajax event="rowEditCancel"
+						listener="#{appConfigView.onRowCancel}" update=":form:msgs" />
+
+					<p:column style="width:35px">
+						<p:rowEditor />
+					</p:column>
+
+					<p:column headerText="Id" style="width:35px">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{conf.id}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{conf.id}" disabled="true"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column headerText="Nombre" >
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{conf.nombre}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{conf.nombre}" disabled="true"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column headerText="Descripción" >
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{conf.descripcion}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{conf.descripcion}" disabled="true"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column headerText="Clave" >
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{conf.clave}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{conf.clave}" disabled="true"/>
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+					
+					<p:column headerText="Valor" >
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{conf.valor}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{conf.valor}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+
+
+
+
+	</ui:define>
+	<ui:define name="body-end">
+		<script type="text/javascript">
+	
+		</script>
+	</ui:define>
+</ui:composition>

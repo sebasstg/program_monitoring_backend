@@ -1,0 +1,40 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="#{layoutMB.template}"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:param name="renderBreadCrumb" value="false"/>
+
+    <ui:define name="title">
+        <div class="pull-right hidden-xs">
+            <h:graphicImage library="images" name="SAGA_LOGO_A.png" height="100" width="100"/>
+        </div>
+        <p:growl autoUpdate="true" life="4000"/>
+        <h2 class="align-center">
+            Bienvenido a <span class="text-aqua"> <i><a href="https://github.com/adminfaces/" target="_blank"
+                                                          style="text-transform: none;text-decoration: none"> Sagatechs</a></i></span> Showcase!
+            <br/>
+            <small>Usuario
+            </small>
+
+        </h2>
+
+        <hr/>
+
+
+    </ui:define>
+
+    <ui:define name="body">
+
+        <h2 class="align-center">
+            Ir a  <span class="text-aqua"> <i><a href="showcase/index.xhtml" target="_blank"
+                                                 style="text-transform: none;text-decoration: none"> Sagatechs</a></i></span> Showcase!!
+            <br/>
+
+
+        </h2>
+
+    </ui:define>
+</ui:composition>

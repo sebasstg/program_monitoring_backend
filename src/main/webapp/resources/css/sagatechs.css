@@ -1,0 +1,25 @@
+/*imagenes de usuario boton login*/
+#userImage {
+    float: left;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-top: -2px;
+}
+
+#userImageNotLogged {
+    float: left;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-top: -2px;
+}
+
+.centered {
+    position:relative;
+    height: 50px;
+    margin:0 auto;
+    padding: 0% 0;
+}

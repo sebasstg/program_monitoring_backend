@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pt="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:pe="http://primefaces.org/ui/extensions">
+
+    <style type="text/css">
+        div.ui-menu.ui-menu-dynamic {
+            z-index: 9999!important;
+        }
+
+        div.btn-download.ui-splitbutton.ui-buttonset {
+            margin: 10px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function start() {
+            PF('statusDialog').show();
+        }
+
+        function stop() {
+            PF('statusDialog').hide();
+        }
+    </script>
+
+    <ul class="nav navbar-nav">
+        <ui:fragment rendered="#{not loginView.loggedIn}">
+            <li class="dropdown user user-menu"><p:link
+                    outcome="/pages/login.xhtml">
+                <pe:gravatar id="userImageNotLogged" value="nonexisting"/>
+                <span class="hidden-xs">Ingresar al sistema</span>
+            </p:link></li>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{loginView.loggedIn}">
+            <li class="dropdown user user-menu"><a href="#"
+                                                   class="dropdown-toggle" data-toggle="dropdown"> <pe:gravatar
+                    id="userImage" value="nonexisting"/> <span class="hidden-xs">#{loginView.username}</span>
+            </a>
+                <ul class="dropdown-menu">
+                    <li class="user-header">
+
+                        <p>
+                            #{loginView.username}
+
+
+                        </p>
+
+                        <p>
+                            <small>
+                                #{loginView.roles}</small>
+                        </p>
+                    </li>
+                    <li class="user-footer"><h:form prependId="false">
+                        <div class="pull-left">
+                            <p:commandLink styleClass="btn btn-danger" action="#{loginView.changePassword}"
+                                           value="Cambiar contraseña"/>
+                        </div>
+                        <div class="pull-right">
+                            <p:commandLink id="logout" action="#{loginView.doLogout}"
+                                           title="Salir">
+                                <i class="fa fa-sign-out fa-2x"></i>
+                            </p:commandLink>
+                        </div>
+                    </h:form></li>
+                </ul>
+            </li>
+        </ui:fragment>
+
+
+
+    </ul>
+
+
+
+
+</ui:composition>

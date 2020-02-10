@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="templates/template.xhtml"
+
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <!--template="templates/template-top.xhtml"-->
+    <ui:param name="renderBreadCrumb" value="false"/>
+
+    <ui:define name="title">
+        <div class="pull-right hidden-xs">
+            <h:graphicImage library="images" name="SAGA_LOGO_A.png" height="100" width="100"/>
+        </div>
+        <p:growl autoUpdate="true" life="4000"/>
+        <h2 class="align-center">
+            Bienvenido a <span class="text-aqua"> <i><a href="https://github.com/adminfaces/" target="_blank"
+                                                          style="text-transform: none;text-decoration: none"> Sagatechs</a></i></span> Showcase!
+            <br/>
+            <small>Integrating <p:link value="Primefaces" href="http://primefaces.org"/>, <p:link value="Bootstrap"
+                                                                                                  href="http://getbootstrap.com/"/> and
+                <p:link value="Admin LTE" href="https://almsaeedstudio.com/themes/AdminLTE/index2.html/"/> into your
+                <p:link value="JSF" href="https://javaserverfaces.java.net/"/> application.
+            </small>
+
+        </h2>
+
+    <hr/>
+
+        <h:form>
+            <p:panel styleClass="card box-primary" header="Nested selects">
+                <div class="ui-g ui-fluid ui-g-12">
+                    <div class="ui-g-6">
+                        <div class="ui-g-12">
+                            <p:outputLabel for="itens" value="Itens"/>
+                        </div>
+                        <div class="ui-g-11">
+                            <p:selectOneMenu id="itens" value="#{indexMB.selectedItem}">
+                                <f:selectItem itemLabel="Choice an item" itemValue=""/>
+                                <f:selectItems value="#{indexMB.itens}"/>
+                                <p:ajax event="itemSelect" listener="#{indexMB.onItemChange}" update="@form"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+
+                    <div class="ui-g-6">
+                        <div class="ui-g-12">
+                            <p:outputLabel for="subItens" value="SubItens"/>
+                        </div>
+                        <div class="ui-g-11">
+                            <p:selectOneMenu id="subItens" value="#{indexMB.selectedSubItem}">
+                                <f:selectItem itemLabel="Choice a subitem" itemValue=""/>
+                                <f:selectItems value="#{indexMB.filteredSubItens}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </div>
+                </div>
+            </p:panel>
+        </h:form>
+
+    </ui:define>
+
+    <ui:define name="body">
+
+        <ui:include src="dashboard/dashboard.xhtml"/>
+    </ui:define>
+</ui:composition>
