@@ -48,11 +48,11 @@ public class UserRestEndpoint {
         try {
             return userService.authenticateRest(username, password, push);
         } catch (Exception e) {
-            if (ExceptionUtils.getRootCause(e) instanceof AuthorizationException) {
+           /* if (ExceptionUtils.getRootCause(e) instanceof AuthorizationException) {
                 throw new AuthorizationException(ExceptionUtils.getRootCauseMessage(e));
-            } else {
+            } else {*/
                 throw e;
-            }
+           // }
 
         }
     }

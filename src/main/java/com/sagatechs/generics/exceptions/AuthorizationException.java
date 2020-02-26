@@ -13,4 +13,9 @@ public class AuthorizationException extends RuntimeException {
     public AuthorizationException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    @Override
+    public String toString() {
+        return super.getMessage();
+    }
 }

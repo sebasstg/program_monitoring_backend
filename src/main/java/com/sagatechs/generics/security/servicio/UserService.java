@@ -260,7 +260,7 @@ public class UserService implements Serializable {
             return generatedTokens;
         } else {
             throw new AuthorizationException(
-                    "Acceso denegado. Por favor ingrese correctamente el nombre de usuario y contraseña.");
+                    "Acceso denegado. Por favor ingrese correctamente el nombre de usuario y contraseña.", null);
         }
 
     }
