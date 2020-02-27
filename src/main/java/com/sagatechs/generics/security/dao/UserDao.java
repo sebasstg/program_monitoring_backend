@@ -29,10 +29,55 @@ public class UserDao extends GenericDaoJpa<User, Long> {
      */
     public User findByUserNameAndPassword(String username, byte[] password, State state) {
 
-        String jpql = "SELECT DISTINCT o FROM User o WHERE o.username = :username AND o.password = :password AND o.state = :state";
+        String jpql = "SELECT DISTINCT o FROM User o left outer join fetch o.roleAssigments ra join fetch ra.role  WHERE o.username = :username AND o.password = :password AND o.state = :state";
         Query q = getEntityManager().createQuery(jpql, User.class);
         q.setParameter("username", username);
         q.setParameter("password", password);
+        q.setParameter("state", state);
+
+        try {
+            return (User) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Busca el usuario por su nombre de usuario y pasword hasheado con roles
+     *
+     * @param username nombre de usuario
+     * @param password contraseña
+     * @return usuario
+     */
+    public User findByUserNameAndPasswordWithRoles(String username, byte[] password, State state) {
+
+        String jpql = "SELECT DISTINCT o FROM User o left outer join fetch o.roleAssigments ra " +
+                "join fetch ra.role  WHERE o.username = :username AND o.password = :password AND o.state = :state and ra.state = :state and ra.role.state = :state";
+        Query q = getEntityManager().createQuery(jpql, User.class);
+        q.setParameter("username", username);
+        q.setParameter("password", password);
+        q.setParameter("state", state);
+
+        try {
+            return (User) q.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Busca el usuario por su nombre de usuario y pasword hasheado con roles
+     *
+     * @param username nombre de usuario
+     * @param password contraseña
+     * @return usuario
+     */
+    public User findByUserNameWithRoles(String username,  State state) {
+
+        String jpql = "SELECT DISTINCT o FROM User o left outer join fetch o.roleAssigments ra " +
+                "join fetch ra.role  WHERE o.username = :username AND o.state = :state and ra.state = :state and ra.role.state = :state  ";
+        Query q = getEntityManager().createQuery(jpql, User.class);
+        q.setParameter("username", username);
         q.setParameter("state", state);
 
         try {

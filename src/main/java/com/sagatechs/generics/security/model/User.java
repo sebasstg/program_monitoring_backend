@@ -28,6 +28,9 @@ public class User extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
 
     @NaturalId
     @NotEmpty(message = "El nombre de usuario es un dato obligatorio")
@@ -160,6 +163,15 @@ public class User extends BaseEntity<Long> {
     @SuppressWarnings("unused")
     public void setRoleAssigments(Set<RoleAssigment> roleAssigments) {
         this.roleAssigments = roleAssigments;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void addRole(Role role){

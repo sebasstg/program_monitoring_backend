@@ -12,6 +12,8 @@ import com.sagatechs.generics.security.model.User;
 import com.sagatechs.generics.security.servicio.UserService;
 import com.sagatechs.generics.utils.SecurityUtils;
 import org.jboss.logging.Logger;
+import org.unhcr.programMonitoring.daos.ProjectImplementerDao;
+import org.unhcr.programMonitoring.model.ProjectImplementer;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -42,22 +44,30 @@ public class AppDataConfigLlenadoAutomatico {
     @Inject
     AppConfigurationDao appConfigurationDao;
 
+    @Inject
+    ProjectImplementerDao projectImplementerDao;
+
 
     private Role roleSuperAdministrador;
     private Role roleAdministrador;
     private Role roleMonitorProgramas;
     private Role roleEjecutorProyectos;
 
+    ProjectImplementer p1;
+
+    ProjectImplementer p2;
+
 
 
     @PostConstruct
     private void init() {
         LOGGER.debug("Iniciando llenado automatico");
-        /*this.createAppConfigs();
+       /* this.createAppConfigs();
         this.cargarRoles();
         this.cargarUsuarios();*/
         LOGGER.debug("Terminado llenado automático");
     }
+
 
     @SuppressWarnings("unused")
     private void createAppConfigs() {
@@ -89,18 +99,39 @@ public class AppDataConfigLlenadoAutomatico {
 
     @SuppressWarnings("unused")
     private void cargarUsuarios() {
+
+        p1= new ProjectImplementer();
+        p1.setDescription("Implementador 1");
+        p1.setCode("001");
+        p1.setState(State.ACTIVE);
+
+        projectImplementerDao.save(p1);
+
+
+        p2= new ProjectImplementer();
+        p2.setDescription("UNHCR");
+        p2.setCode("000");
+        p2.setState(State.ACTIVE);
+
+        projectImplementerDao.save(p2);
+
+
         byte[] pass = this.securityUtils.hashPasswordByte("1234", UserService.salt);
         User superAdministrador = new User();
         superAdministrador.setUsername("superadministrador");
+        superAdministrador.setName("nombre super");
         superAdministrador.setPassword(pass);
         superAdministrador.setState(State.ACTIVE);
         superAdministrador.setEmail("superadministrador@yopmail.com");
         superAdministrador.addRole(roleSuperAdministrador);
+        //superAdministrador.setProjectImplementer(p2);
+
         this.instantiateUser(superAdministrador);
 
         User administrador = new User();
         administrador.setUsername("administrador");
-        superAdministrador.setPassword(pass);
+        administrador.setName("name administrador");
+        administrador.setPassword(pass);
         administrador.setState(State.ACTIVE);
         administrador.setEmail("administrador@yopmail.com");
         administrador.addRole(roleAdministrador);
@@ -108,7 +139,8 @@ public class AppDataConfigLlenadoAutomatico {
 
         User monitorProgramas = new User();
         monitorProgramas.setUsername("monitor");
-        superAdministrador.setPassword(pass);
+        monitorProgramas.setName("name administrador");
+        monitorProgramas.setPassword(pass);
         monitorProgramas.setState(State.ACTIVE);
         monitorProgramas.setEmail("monitor@yopmail.com");
         monitorProgramas.addRole(roleMonitorProgramas);
@@ -116,10 +148,12 @@ public class AppDataConfigLlenadoAutomatico {
 
         User ejecutorProyectos = new User();
         ejecutorProyectos.setUsername("ejecutor");
-        superAdministrador.setPassword(pass);
+        ejecutorProyectos.setName("name ejecutorProyectos");
+        ejecutorProyectos.setPassword(pass);
         ejecutorProyectos.setState(State.ACTIVE);
         ejecutorProyectos.setEmail("ejecutor@yopmail.com");
         ejecutorProyectos.addRole(roleEjecutorProyectos);
+        ejecutorProyectos.setProjectImplementer(p2);
         this.instantiateUser(ejecutorProyectos);
     }
 

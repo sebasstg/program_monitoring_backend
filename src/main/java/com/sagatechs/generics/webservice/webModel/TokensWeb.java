@@ -2,7 +2,12 @@ package com.sagatechs.generics.webservice.webModel;
 
 public class TokensWeb {
 
+
+    private Long id;
+
     private String username;
+
+    private String name;
 
     private String[] roles = {};
 
@@ -21,6 +26,22 @@ public class TokensWeb {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String[] getRoles() {

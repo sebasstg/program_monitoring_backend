@@ -5,6 +5,7 @@ import com.sagatechs.generics.exceptions.AuthorizationException;
 import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
 import com.sagatechs.generics.security.dao.UserDao;
+import com.sagatechs.generics.security.model.RoleAssigment;
 import com.sagatechs.generics.security.model.RoleType;
 import com.sagatechs.generics.security.model.User;
 import com.sagatechs.generics.service.EmailService;
@@ -94,16 +95,16 @@ public class UserService implements Serializable {
      * @param password
      * @return
      */
-    public boolean verifyUsernamePassword(String username, String password) {
+    public User verifyUsernamePassword(String username, String password) {
         if (StringUtils.isBlank(username) || StringUtils.isBlank(password)) {
-            return false;
+            return null;
         }
 
         // obtengo el hash del pass enviado
         byte[] hashedPass = this.securityUtils.hashPasswordByte(password, salt);
-        User user = this.userDao.findByUserNameAndPassword(username, hashedPass, State.ACTIVE);
+        User user = this.userDao.findByUserNameAndPasswordWithRoles(username, hashedPass, State.ACTIVE);
 
-        return user != null;
+        return user;
     }
 
 
@@ -249,18 +250,16 @@ public class UserService implements Serializable {
      * @throws AccessDeniedException
      */
     public TokensWeb authenticateRest(String username, String password, String pushToken) {
-
-        if (this.verifyUsernamePassword(username, password)) {
-
-
-            TokensWeb generatedTokens = generateTokens(username);
+        User user = this.verifyUsernamePassword(username, password);
+        if (user != null) {
+            TokensWeb generatedTokens = generateTokens(user);
 
             renewTokens(username, generatedTokens, pushToken);
 
             return generatedTokens;
         } else {
             throw new AuthorizationException(
-                    "Acceso denegado. Por favor ingrese correctamente el nombre de usuario y contraseña.", null);
+                    "Acceso denegado. Por favor ingrese correctamente el nombre de usuario y contraseña.");
         }
 
     }
@@ -291,18 +290,26 @@ public class UserService implements Serializable {
     /**
      * Generara estructura web para tokens
      *
-     * @param username
+     * @param user
      * @return estructura web para tokens
      */
 
-    private TokensWeb generateTokens(String username) {
-        Set<String> rolesActivos = this.getRolesNamesByUsername(username, State.ACTIVE);
+    private TokensWeb generateTokens(User user) {
+
+        //Set<String> rolesActivos = this.getRolesNamesByUsername(user, State.ACTIVE);
+        //obtengo los roles activos
+        Set<String> rolesActivos = new HashSet<>();
+        for(RoleAssigment ra:user.getRoleAssigments()){
+            rolesActivos.add(ra.getRole().getRoleType().name());
+        }
 
         TokensWeb generatedTokens = new TokensWeb();
-        generatedTokens.setAccess_token(issueToken(username, rolesActivos, false));
-        generatedTokens.setRefresh_token(issueToken(username, rolesActivos, true));
+        generatedTokens.setId(user.getId());
+        generatedTokens.setAccess_token(issueToken(user.getUsername(), rolesActivos, false));
+        generatedTokens.setRefresh_token(issueToken(user.getUsername(), rolesActivos, true));
         generatedTokens.setExpires_in(EXPIRATION_TIME_SECONDS);
-        generatedTokens.setUsername(username);
+        generatedTokens.setUsername(user.getUsername());
+        generatedTokens.setName(user.getName());
         generatedTokens.setRoles(rolesActivos.toArray(new String[0]));
 
         return generatedTokens;
@@ -549,7 +556,8 @@ public class UserService implements Serializable {
                 throw new AccessDeniedException("Permiso denegado. Por favor vuelga a ingresar al sistema");
             }
 
-            TokensWeb generatedTokens = generateTokens(username);
+            User user = this.userDao.findByUserNameWithRoles(username,State.ACTIVE);
+            TokensWeb generatedTokens = generateTokens(user);
 
             renewTokens(username, generatedTokens, null);
             return generatedTokens;
@@ -676,7 +684,7 @@ public class UserService implements Serializable {
                 case PHONE:
                     ////TODO  PROVICIONAL CON CORREO
                     this.sendVerificationCodeToEmail("saga@yopmail.com", code);
-                    this.sendVerificationCodeToSMS(userVerificator,code);
+                    this.sendVerificationCodeToSMS(userVerificator, code);
                     media = stringUtils.maskPhone(user.getPhoneNumber());
                     break;
 

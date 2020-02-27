@@ -24,7 +24,7 @@ public class UsernamePasswordIdentityStore implements IdentityStore {
         if (credential instanceof UsernamePasswordRolesCredential) {
             UsernamePasswordRolesCredential credentialPass = (UsernamePasswordRolesCredential) credential;
 
-            if(this.userService.verifyUsernamePassword(credentialPass.getCaller(), credentialPass.getPasswordAsString())){
+            if(this.userService.verifyUsernamePassword(credentialPass.getCaller(), credentialPass.getPasswordAsString())!=null){
                 credentialValidationResult= new CredentialValidationResult(credentialPass.getCaller());
             }else{
                 credentialValidationResult = CredentialValidationResult.INVALID_RESULT;

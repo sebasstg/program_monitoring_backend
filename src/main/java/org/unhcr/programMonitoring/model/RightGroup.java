@@ -1,5 +1,6 @@
 package org.unhcr.programMonitoring.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sagatechs.generics.persistence.model.BaseEntity;
 import com.sagatechs.generics.persistence.model.State;
 
@@ -25,6 +26,7 @@ public class RightGroup extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private State state;
 
+    @JsonIgnore
     @OneToMany( mappedBy = "rightGroup",fetch = FetchType.LAZY)
     private Set<Objetive> objetives= new HashSet<>();
 
