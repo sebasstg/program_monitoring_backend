@@ -26,4 +26,21 @@ public class RightGroupDao extends GenericDaoJpa<RightGroup, Long> {
     }
 
 
+    public List<RightGroup> getByCode(String code) {
+        String sql = "select distinct o from RightGroup o where o.code =:code";
+        Query q = this.getEntityManager().createQuery(sql, RightGroup.class).setParameter("code", code);
+
+        return q.getResultList();
+
+    }
+
+    public List<RightGroup> getByDescription(String description) {
+        String sql = "select distinct o from RightGroup o where o.description =:description";
+        Query q = this.getEntityManager().createQuery(sql, RightGroup.class).setParameter("description", description);
+
+        return q.getResultList();
+
+    }
+
+
 }
