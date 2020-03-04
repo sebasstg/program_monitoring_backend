@@ -76,6 +76,22 @@ public class Output extends BaseEntity<Long> {
         this.state = state;
     }
 
+    public Set<PerformanceIndicator> getPerformanceIndicators() {
+        return performanceIndicators;
+    }
+
+    public void setPerformanceIndicators(Set<PerformanceIndicator> performanceIndicators) {
+        this.performanceIndicators = performanceIndicators;
+    }
+
+    public Objetive getObjetive() {
+        return objetive;
+    }
+
+    public void setObjetive(Objetive objetive) {
+        this.objetive = objetive;
+    }
+
     @Override
     public String toString() {
         return "Output{" +

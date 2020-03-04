@@ -11,6 +11,8 @@ import java.util.Set;
 @Table(schema = "program_monitoring", name = "objetives")
 public class Objetive extends BaseEntity<Long> {
 
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
