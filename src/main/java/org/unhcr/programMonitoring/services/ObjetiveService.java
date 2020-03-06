@@ -34,7 +34,7 @@ public class ObjetiveService {
 
     public List<ObjetiveWeb> getAllObjetiveWebsOrderedByCode() {
 
-        List<Objetive> objetives=this.getAllOrderedByCode();
+        List<Objetive> objetives = this.getAllOrderedByCode();
 
         return this.objetivesToObjetiveWebs(objetives);
 
@@ -122,27 +122,29 @@ public class ObjetiveService {
         }
     }
 
-    public ObjetiveWeb objetiveToObjetiveWeb(Objetive objetive ){
+    public ObjetiveWeb objetiveToObjetiveWeb(Objetive objetive) {
+        if (objetive == null) return null;
 
-        return new ObjetiveWeb(objetive.getId(), objetive.getCode(),objetive.getDescription(), objetive.getState(),this.rightGroupService.rightGroupToRightGroupWeb(objetive.getRightGroup()));
+        return new ObjetiveWeb(objetive.getId(), objetive.getCode(), objetive.getDescription(), objetive.getState(), this.rightGroupService.rightGroupToRightGroupWeb(objetive.getRightGroup()));
     }
 
-    private List<ObjetiveWeb> objetivesToObjetiveWebs(List<Objetive> objetives){
-        List<ObjetiveWeb> result= new ArrayList<>();
-        for(Objetive objetive:objetives){
+    private List<ObjetiveWeb> objetivesToObjetiveWebs(List<Objetive> objetives) {
+        List<ObjetiveWeb> result = new ArrayList<>();
+        for (Objetive objetive : objetives) {
 
             result.add(this.objetiveToObjetiveWeb(objetive));
         }
         return result;
 
     }
+
     private Objetive objetiveWebToObjetive(ObjetiveWeb objetiveWeb) {
         Objetive o = new Objetive();
         o.setId(objetiveWeb.getId());
         o.setCode(objetiveWeb.getCode());
         o.setDescription(o.getDescription());
         RightGroup rightGroup = null;
-        if (objetiveWeb.getRightGroupWeb() != null && objetiveWeb.getRightGroupWeb().getId()!=null) {
+        if (objetiveWeb.getRightGroupWeb() != null && objetiveWeb.getRightGroupWeb().getId() != null) {
             rightGroup = this.rightGroupService.find(objetiveWeb.getRightGroupWeb().getId());
         }
         o.setRightGroup(rightGroup);
@@ -150,4 +152,11 @@ public class ObjetiveService {
     }
 
 
+    public List<ObjetiveWeb> geWebtByRightId(Long id) {
+        return this.objetivesToObjetiveWebs(this.getByRightId(id));
+    }
+
+    private List<Objetive> getByRightId(Long id) {
+        return this.objetiveDao.getByRightId(id);
+    }
 }

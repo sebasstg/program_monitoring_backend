@@ -4,6 +4,7 @@ import com.sagatechs.generics.persistence.GenericDaoJpa;
 import org.unhcr.programMonitoring.model.Objetive;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -41,4 +42,10 @@ public class ObjetiveDao extends GenericDaoJpa<Objetive, Long> {
     }
 
 
+    public List<Objetive> getByRightId(Long id) {
+        String sql = "select distinct o from Objetive o where o.rightGroup.id =:id";
+        Query q = this.getEntityManager().createQuery(sql, Objetive.class).setParameter("id", id);
+
+       return q.getResultList();
+    }
 }

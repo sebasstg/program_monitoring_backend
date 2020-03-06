@@ -1,9 +1,11 @@
 package org.unhcr.programMonitoring.daos;
 
 import com.sagatechs.generics.persistence.GenericDaoJpa;
+import org.unhcr.programMonitoring.model.Objetive;
 import org.unhcr.programMonitoring.model.Output;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -41,4 +43,9 @@ public class OutputDao extends GenericDaoJpa<Output, Long> {
     }
 
 
+    public List<Output> getByObjetiveId(Long id) {
+        String sql = "select distinct o from Output o where o.objetive.id =:id";
+        Query q = this.getEntityManager().createQuery(sql, Output.class).setParameter("id", id);
+        return q.getResultList() ;
+    }
 }

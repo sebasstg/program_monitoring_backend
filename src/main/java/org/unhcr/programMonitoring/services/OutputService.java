@@ -122,7 +122,7 @@ public class OutputService {
         }
     }
 
-    private OutputWeb outputToOutputWeb(Output output) {
+    public OutputWeb outputToOutputWeb(Output output) {
         if (output == null) {
             return null;
         } else {
@@ -154,5 +154,13 @@ public class OutputService {
         return o;
     }
 
+
+    public List<OutputWeb> getWebByObjetiveId(Long id) {
+        return this.outputsToOutputWebs(this.getByObjetiveId(id));
+    }
+
+    private List<Output> getByObjetiveId(Long id) {
+        return this.outputDao.getByObjetiveId(id);
+    }
 
 }
