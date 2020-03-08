@@ -122,7 +122,7 @@ public class PerformanceIndicatorService {
         }
     }
 
-    private PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
+    public PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
         if (performanceIndicator == null) {
             return null;
         } else {

@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.model;
 
 import com.sagatechs.generics.persistence.model.BaseEntity;
+import com.sagatechs.generics.persistence.model.State;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,6 +24,10 @@ public class Project extends BaseEntity<Long> {
 
     @Column(name = "reporting_finishing_date", nullable = false)
     private LocalDateTime reportingFinishingDate;
+
+    @Column(name = "state",  nullable = false)
+    @Enumerated(EnumType.STRING)
+    private State state;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "period_id", foreignKey = @ForeignKey(name = "fk_projects_periods"))
@@ -102,5 +107,13 @@ public class Project extends BaseEntity<Long> {
 
     public void setIndicatorExecutions(Set<IndicatorExecution> indicatorExecutions) {
         this.indicatorExecutions = indicatorExecutions;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 }

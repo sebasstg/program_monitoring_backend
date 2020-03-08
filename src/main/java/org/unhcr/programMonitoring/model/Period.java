@@ -2,6 +2,7 @@ package org.unhcr.programMonitoring.model;
 
 import com.sagatechs.generics.persistence.model.BaseEntity;
 import com.sagatechs.generics.persistence.model.State;
+import org.unhcr.programMonitoring.webServices.model.PeriodResumeWeb;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -9,6 +10,19 @@ import java.util.Set;
 
 @Entity
 @Table(schema = "program_monitoring", name = "periods")
+@SqlResultSetMapping(
+        name = "periodResumeWebMapping",
+        classes = @ConstructorResult(
+                targetClass = PeriodResumeWeb.class,
+                columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "state", type = String.class),
+                        @ColumnResult(name = "year", type = Integer.class),
+                        @ColumnResult(name = "numberOfProjects", type = Integer.class),
+                        @ColumnResult(name = "numberOfAsignedIndicators", type = Integer.class)
+                }
+        )
+)
 public class Period extends BaseEntity<Long> {
 
     @Id
@@ -18,7 +32,7 @@ public class Period extends BaseEntity<Long> {
     @Column(name = "year", unique = true, nullable = false)
     private Integer year;
 
-    @Column(name = "state",  nullable = false)
+    @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
 
@@ -26,7 +40,7 @@ public class Period extends BaseEntity<Long> {
     private Set<Project> projects;
 
     @OneToMany(mappedBy = "period")
-    private Set<PeriodPerformanceIndicatorAssigment> periodPerformanceIndicatorAssigments= new HashSet<>();
+    private Set<PeriodPerformanceIndicatorAssigment> periodPerformanceIndicatorAssigments = new HashSet<>();
 
     @Override
     public Long getId() {

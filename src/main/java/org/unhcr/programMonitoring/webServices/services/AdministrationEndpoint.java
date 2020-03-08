@@ -3,11 +3,7 @@ package org.unhcr.programMonitoring.webServices.services;
 import com.sagatechs.generics.exceptions.GeneralAppException;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.model.Objetive;
-import org.unhcr.programMonitoring.model.PerformanceIndicator;
-import org.unhcr.programMonitoring.services.ObjetiveService;
-import org.unhcr.programMonitoring.services.OutputService;
-import org.unhcr.programMonitoring.services.PerformanceIndicatorService;
-import org.unhcr.programMonitoring.services.RightGroupService;
+import org.unhcr.programMonitoring.services.*;
 import org.unhcr.programMonitoring.webServices.model.*;
 
 import javax.enterprise.context.RequestScoped;
@@ -35,11 +31,16 @@ public class AdministrationEndpoint {
     @Inject
     PerformanceIndicatorService performanceIndicatorService;
 
+    @Inject
+    PeriodService periodService;
+
+    @Inject
+    PeriodPerformanceIndicatorAssigmentService periodPerformanceIndicatorAssigmentService;
 
     @Path("/rightGroup")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<RightGroupWeb> getAllRighGroups(){
+    public List<RightGroupWeb> getAllRighGroups() {
         return this.rightGroupService.getAllRightGroupWebOrderedByCode();
     }
 
@@ -47,7 +48,7 @@ public class AdministrationEndpoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Long createRighGroup(RightGroupWeb rightGroupWeb) throws GeneralAppException {
-         return this.rightGroupService.save(rightGroupWeb);
+        return this.rightGroupService.save(rightGroupWeb);
     }
 
     @Path("/rightGroup")
@@ -65,12 +66,14 @@ public class AdministrationEndpoint {
         //this.rightGroupService.checkUniqueCode(stringUniqueCheckWeb.getId(), stringUniqueCheckWeb.getValue() );
     }
 
-    /**objetives**/
+    /**
+     * objetives
+     **/
 
     @Path("/objetive")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ObjetiveWeb> getAllObjetives(){
+    public List<ObjetiveWeb> getAllObjetives() {
         return this.objetiveService.getAllObjetiveWebsOrderedByCode();
     }
 
@@ -92,15 +95,17 @@ public class AdministrationEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<ObjetiveWeb> getObjetiveByRightId(@PathParam("id") Long id) throws GeneralAppException {
-       return this.objetiveService.geWebtByRightId(id);
+        return this.objetiveService.geWebtByRightId(id);
     }
 
-    /**outputs**/
+    /**
+     * outputs
+     **/
 
     @Path("/output")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<OutputWeb> getAllOutputs(){
+    public List<OutputWeb> getAllOutputs() {
         return this.outputService.getAllOutputWebOrderedByCode();
     }
 
@@ -124,12 +129,15 @@ public class AdministrationEndpoint {
     public List<OutputWeb> getOutputByObjetiveId(@PathParam("id") Long id) throws GeneralAppException {
         return this.outputService.getWebByObjetiveId(id);
     }
-    /**PerformanceIndicator**/
+
+    /**
+     * PerformanceIndicator
+     **/
 
     @Path("/performanceIndicator")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PerformanceIndicatorWeb> getAllPerformanceIndicators(){
+    public List<PerformanceIndicatorWeb> getAllPerformanceIndicators() {
         return this.performanceIndicatorService.getAllPerformanceIndicatorWebOrderedByCode();
     }
 
@@ -150,7 +158,64 @@ public class AdministrationEndpoint {
     @Path("performanceIndicator/output/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PerformanceIndicatorWeb> getOutputByOutputId(@PathParam("id") Long id) throws GeneralAppException {
+    public List<PerformanceIndicatorWeb> getPerformanceIndicatorsByOutputId(@PathParam("id") Long id) throws GeneralAppException {
         return this.performanceIndicatorService.getWebByOutputId(id);
     }
+
+    /**
+     * Period
+     **/
+    @Path("/period/resume")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PeriodResumeWeb> getAllPeriodsResumeWeb() {
+        return this.periodService.getAllPeriodResumeWebOrderedByYear();
+    }
+
+    @Path("/period/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public PeriodWeb getById(@PathParam("id") Long id) throws GeneralAppException {
+        return this.periodService.getPeriodWebById(id);
+    }
+
+
+    @Path("/period")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long savePeriodWeb(PeriodWeb periodWeb) throws GeneralAppException {
+        return this.periodService.save(periodWeb);
+    }
+
+    @Path("/period")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updatePeriod(PeriodWeb periodWeb) throws GeneralAppException {
+        return this.periodService.update(periodWeb);
+    }
+
+
+    //PeriodPerformanceIndicatorAssigment
+
+
+    @Path("/periodPerformanceIndicatorAssigment")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long savePeriodPerformanceIndicatorAssigment(PeriodPerformanceIndicatorAssigmentWeb periodPerformanceIndicatorAssigmentWeb) throws GeneralAppException {
+        return this.periodPerformanceIndicatorAssigmentService.save(periodPerformanceIndicatorAssigmentWeb);
+    }
+
+    @Path("/periodPerformanceIndicatorAssigment")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updatePeriodPerformanceIndicatorAssigment(PeriodPerformanceIndicatorAssigmentWeb periodPerformanceIndicatorAssigmentWeb) throws GeneralAppException {
+        return this.periodPerformanceIndicatorAssigmentService.update(periodPerformanceIndicatorAssigmentWeb);
+    }
+
+
+
+
+
+
+
 }

@@ -44,7 +44,7 @@ public class PerformanceIndicatorDao extends GenericDaoJpa<PerformanceIndicator,
 
     public List<PerformanceIndicator> getByOutputId(Long id) {
         String sql = "select distinct o from PerformanceIndicator o where o.output.id =:id";
-        Query q = this.getEntityManager().createQuery(sql, Objetive.class).setParameter("id", id);
+        Query q = this.getEntityManager().createQuery(sql, PerformanceIndicator.class).setParameter("id", id);
         return q.getResultList();
     }
 }
