@@ -22,7 +22,7 @@ public class PeriodPerformanceIndicatorAssigmentDao extends GenericDaoJpa<Period
         String sql = "select distinct o from PeriodPerformanceIndicatorAssigment o left outer join fetch o.performanceIndicator p left outer join fetch o.period" +
                 //" left outer  join fetch o. " +
                 " where o.period.id= :id order by o.performanceIndicator.code";
-        Query q = this.getEntityManager().createQuery(sql, Period.class).setParameter("id", periodId);
+        Query q = this.getEntityManager().createQuery(sql, PeriodPerformanceIndicatorAssigment.class).setParameter("id", periodId);
         return q.getResultList();
     }
 

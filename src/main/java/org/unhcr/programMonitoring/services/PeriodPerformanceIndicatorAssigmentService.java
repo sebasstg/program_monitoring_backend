@@ -64,7 +64,7 @@ public class PeriodPerformanceIndicatorAssigmentService {
 
         PeriodPerformanceIndicatorAssigment periodPerformanceIndicatorAssigmentOrg = this.periodPerformanceIndicatorAssigmentDao.getByPeriodIdAndPerformanceIndicatorId(periodPerformanceIndicatorAssigmentWeb.getPeriodWeb().getId(), periodPerformanceIndicatorAssigmentWeb.getPerformanceIndicatorWeb().getId());
 
-        if (periodPerformanceIndicatorAssigmentOrg.getId().equals(periodPerformanceIndicatorAssigmentWeb.getId())) {
+        if (!periodPerformanceIndicatorAssigmentOrg.getId().equals(periodPerformanceIndicatorAssigmentWeb.getId())) {
             throw new GeneralAppException("El indicador " + periodPerformanceIndicatorAssigmentOrg.getPerformanceIndicator().getCode() + " ya se encuentra adignado al periodo " + periodPerformanceIndicatorAssigmentOrg.getPeriod().getYear() + ".", Response.Status.CONFLICT.getStatusCode());
         }
 
@@ -148,5 +148,9 @@ public class PeriodPerformanceIndicatorAssigmentService {
                         this.periodService.periodToPeriodWeb(periodPerformanceIndicatorAssigment.getPeriod())
                 );
 
+    }
+
+    public List<PeriodPerformanceIndicatorAssigmentWeb> getWebByPeriodId(Long periodId) {
+        return this.periodPerformanceIndicatorAssigmentsToPeriodPerformanceIndicatorAssigmentWebs(this.periodPerformanceIndicatorAssigmentDao.getByPeriodId(periodId));
     }
 }

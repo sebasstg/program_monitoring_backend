@@ -196,7 +196,12 @@ public class AdministrationEndpoint {
 
 
     //PeriodPerformanceIndicatorAssigment
-
+    @Path("/periodPerformanceIndicatorAssigment/period/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PeriodPerformanceIndicatorAssigmentWeb> getPeriodPerformanceIndicatorAssigmentByPeriodId(@PathParam("id") Long periodId) {
+        return this.periodPerformanceIndicatorAssigmentService.getWebByPeriodId(periodId);
+    }
 
     @Path("/periodPerformanceIndicatorAssigment")
     @POST
