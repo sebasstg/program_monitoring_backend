@@ -5,19 +5,14 @@ import com.sagatechs.generics.persistence.model.State;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
-import org.unhcr.programMonitoring.daos.PeriodDao;
 import org.unhcr.programMonitoring.daos.SituationDao;
-import org.unhcr.programMonitoring.model.Period;
 import org.unhcr.programMonitoring.model.Situation;
-import org.unhcr.programMonitoring.webServices.model.PeriodResumeWeb;
-import org.unhcr.programMonitoring.webServices.model.PeriodWeb;
 import org.unhcr.programMonitoring.webServices.model.SituationWeb;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Stateless
@@ -49,7 +44,16 @@ public class SituationService {
             throw  new GeneralAppException("El id es un dato necesario para actualizar una situación", Response.Status.BAD_REQUEST.getStatusCode());
         }
         this.validate(situationWeb);
-        Situation situation = this.situationWebToSituation(situationWeb);
+
+        Situation situation = this.situationDao.find(situationWeb.getId());
+        if (situation == null) {
+            throw new GeneralAppException("El no se pudo encontrar la situación con id " + situation.getId(), Response.Status.BAD_REQUEST.getStatusCode());
+        }
+        situation.setId(situationWeb.getId());
+        situation.setCode(situationWeb.getCode());
+        situation.setDescription(situationWeb.getDescription());
+        situation.setState(situationWeb.getState());
+
         this.situationDao.update(situation);
         return situation.getId();
     }

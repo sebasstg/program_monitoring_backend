@@ -5,6 +5,10 @@ import com.sagatechs.generics.persistence.model.State;
 
 public class ProjectImplementerWeb {
 
+
+    public ProjectImplementerWeb() {
+    }
+
     public ProjectImplementerWeb(Long id, String code, String description, State state) {
         this.id = id;
         this.code = code;
