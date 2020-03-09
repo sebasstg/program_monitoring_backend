@@ -30,21 +30,25 @@ public class PeriodDao extends GenericDaoJpa<Period, Long> {
 
     public List<PeriodResumeWeb> getAllPeriodResumeWebOrderedByYear() {
         String sql = "SELECT " +
-                "p.id as id, " +
-                "p.state as state, " +
-                "p.year as year, " +
-                "Count(pr.id) as numberOfProjects, " +
-                "Count(i.id) as numberOfAsignedIndicators " +
-                "FROM " +
-                "program_monitoring.periods AS p " +
-                "LEFT OUTER JOIN program_monitoring.period_performance_indicator_assigments AS i ON i.period_id = p.id " +
-                "LEFT OUTER JOIN program_monitoring.projects AS pr ON pr.period_id = p.id " +
-                "WHERE pr.state ='ACTIVE' AND i.state ='ACTIVE' " +
-                "GROUP BY " +
-                "p.id, " +
-                "p.state, " +
-                "p.year " +
-                "ORDER BY p.year";
+                "       p.id as id, " +
+                "       p.state as state, " +
+                "       p.year as year " +
+                "    ,Count(pr.id) as numberOfProjects " +
+                "    ,Count(i.id) as numberOfAsignedIndicators  " +
+                "   FROM " +
+                "       program_monitoring.periods AS p  " +
+                "   LEFT OUTER JOIN " +
+                "       program_monitoring.period_performance_indicator_assigments AS i  " +
+                "           ON i.period_id = p.id and i.state ='ACTIVE'  " +
+                "   LEFT OUTER JOIN " +
+                "       program_monitoring.projects AS pr  " +
+                "           ON pr.period_id = p.id and pr.state ='ACTIVE'  " +
+                "   GROUP BY " +
+                "       p.id, " +
+                "       p.state, " +
+                "       p.year  " +
+                "   ORDER BY " +
+                "       p.year";
         Query q = this.getEntityManager().createNativeQuery(sql, "periodResumeWebMapping");
 
         return  q.getResultList();
