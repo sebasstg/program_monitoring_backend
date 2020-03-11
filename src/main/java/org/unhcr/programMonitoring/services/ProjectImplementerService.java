@@ -147,4 +147,8 @@ public class ProjectImplementerService {
         return this.projectImplementerToProjectImplementerWeb(this.projectImplementerDao.find(id));
     }
 
+    public ProjectImplementer find(Long id){
+        return this.projectImplementerDao.find(id);
+    }
+
 }

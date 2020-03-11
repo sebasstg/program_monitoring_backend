@@ -4,6 +4,7 @@ import com.sagatechs.generics.persistence.model.BaseEntity;
 import com.sagatechs.generics.persistence.model.State;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,10 +21,10 @@ public class Project extends BaseEntity<Long> {
     private String name;
 
     @Column(name = "reporting_starting_date", nullable = false)
-    private LocalDateTime reportingStartingDate;
+    private LocalDate reportingStartingDate;
 
     @Column(name = "reporting_finishing_date", nullable = false)
-    private LocalDateTime reportingFinishingDate;
+    private LocalDate reportingFinishingDate;
 
     @Column(name = "state",  nullable = false)
     @Enumerated(EnumType.STRING)
@@ -61,19 +62,19 @@ public class Project extends BaseEntity<Long> {
         this.name = name;
     }
 
-    public LocalDateTime getReportingStartingDate() {
+    public LocalDate getReportingStartingDate() {
         return reportingStartingDate;
     }
 
-    public void setReportingStartingDate(LocalDateTime reportingStartingDate) {
+    public void setReportingStartingDate(LocalDate reportingStartingDate) {
         this.reportingStartingDate = reportingStartingDate;
     }
 
-    public LocalDateTime getReportingFinishingDate() {
+    public LocalDate getReportingFinishingDate() {
         return reportingFinishingDate;
     }
 
-    public void setReportingFinishingDate(LocalDateTime reportingFinishingDate) {
+    public void setReportingFinishingDate(LocalDate reportingFinishingDate) {
         this.reportingFinishingDate = reportingFinishingDate;
     }
 
@@ -91,6 +92,15 @@ public class Project extends BaseEntity<Long> {
 
     public void setSituationAssigments(Set<SituationAssigment> situationAssigments) {
         this.situationAssigments = situationAssigments;
+    }
+
+    public void addSituationAssigment(SituationAssigment situationAssigment){
+
+        situationAssigment.setProject(this);
+        if(this.situationAssigments.add(situationAssigment)){
+            this.situationAssigments.remove(situationAssigment);
+            this.situationAssigments.add(situationAssigment);
+        }
     }
 
     public ProjectImplementer getProjectImplementer() {

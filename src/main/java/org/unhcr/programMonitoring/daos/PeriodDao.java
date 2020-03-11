@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.daos;
 
 import com.sagatechs.generics.persistence.GenericDaoJpa;
+import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.model.Objetive;
 import org.unhcr.programMonitoring.model.Period;
 import org.unhcr.programMonitoring.webServices.model.PeriodResumeWeb;
@@ -20,12 +21,20 @@ public class PeriodDao extends GenericDaoJpa<Period, Long> {
 
     public Period getByYear(Integer year) {
         String sql = "select distinct o from Period o where o.year= :year";
-        Query q = this.getEntityManager().createQuery(sql, Period.class).setParameter("year",year);
+        Query q = this.getEntityManager().createQuery(sql, Period.class).setParameter("year", year);
         try {
             return (Period) q.getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
+    }
+
+    public List<Period> getByState(State state) {
+        String sql = "select distinct o from Period o where o.state = :state order by o.year desc";
+        Query q = this.getEntityManager().createQuery(sql, Period.class).setParameter("state", state);
+
+        return q.getResultList();
+
     }
 
     public List<PeriodResumeWeb> getAllPeriodResumeWebOrderedByYear() {
@@ -51,7 +60,7 @@ public class PeriodDao extends GenericDaoJpa<Period, Long> {
                 "       p.year";
         Query q = this.getEntityManager().createNativeQuery(sql, "periodResumeWebMapping");
 
-        return  q.getResultList();
+        return q.getResultList();
 
     }
 

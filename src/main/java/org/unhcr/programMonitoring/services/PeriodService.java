@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.services;
 
 import com.sagatechs.generics.exceptions.GeneralAppException;
+import com.sagatechs.generics.persistence.model.State;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.PeriodDao;
 import org.unhcr.programMonitoring.model.Period;
@@ -10,6 +11,7 @@ import org.unhcr.programMonitoring.webServices.model.PeriodWeb;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 @Stateless
@@ -59,6 +61,23 @@ public class PeriodService {
         return period.getId();
     }
 
+    public List<PeriodWeb> getPeriodWebByState(State state) {
+        List<Period> result = this.getByState(state);
+        return this.periodsToPeriodWebs(result);
+
+    }
+
+    private List<PeriodWeb> periodsToPeriodWebs(List<Period> periodWebs) {
+        List<PeriodWeb> r= new ArrayList<>();
+        for(Period period: periodWebs){
+            r.add(this.periodToPeriodWeb(period));
+        }
+        return r;
+    }
+
+    private List<Period> getByState(State state) {
+        return this.periodDao.getByState(state);
+    }
     public Long update(PeriodWeb periodWeb) throws GeneralAppException {
         if (periodWeb.getId() == null) {
             throw new GeneralAppException("El id del periodo no puede ser null si se va a actualizar el periodo.", Response.Status.BAD_REQUEST.getStatusCode());
@@ -105,5 +124,9 @@ public class PeriodService {
         period.setYear(periodWeb.getYear());
         period.setState(periodWeb.getState());
         return period;
+    }
+
+    public Period find(long periodId) {
+        return this.periodDao.find(periodId);
     }
 }

@@ -132,4 +132,8 @@ public class SituationService {
     public SituationWeb getSituationWebById(Long id) {
         return this.situationToSituationWeb(this.situationDao.find(id));
     }
+
+    public Situation find(Long id) {
+        return this.situationDao.find(id);
+    }
 }

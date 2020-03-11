@@ -4,6 +4,7 @@ import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.model.Objetive;
+import org.unhcr.programMonitoring.model.Project;
 import org.unhcr.programMonitoring.services.*;
 import org.unhcr.programMonitoring.webServices.model.*;
 
@@ -40,6 +41,9 @@ public class AdministrationEndpoint {
 
     @Inject
     ProjectImplementerService projectImplementerService;
+
+    @Inject
+    ProjectService projectService;
 
     @Inject
     PeriodPerformanceIndicatorAssigmentService periodPerformanceIndicatorAssigmentService;
@@ -179,6 +183,20 @@ public class AdministrationEndpoint {
         return this.periodService.getAllPeriodResumeWebOrderedByYear();
     }
 
+    @Path("/period/actives")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PeriodWeb> getActivePeriodsWeb() {
+        return this.periodService.getPeriodWebByState(State.ACTIVE);
+    }
+
+    @Path("/period/inactives")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PeriodWeb> getInactivePeriodsWeb() {
+        return this.periodService.getPeriodWebByState(State.INACTIVE);
+    }
+
     @Path("/period/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -316,6 +334,54 @@ public class AdministrationEndpoint {
     public Long updateProjectImplementer(ProjectImplementerWeb projectImplementerWeb) throws GeneralAppException {
         return this.projectImplementerService.update(projectImplementerWeb);
     }
+
+
+    /**
+     * Project
+     **/
+    @Path("/project")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ProjectWeb> getAllProjectsWeb() {
+        return this.projectService.getAllWeb();
+    }
+
+    @Path("/project/actives")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ProjectWeb>  getProjectsActivesWeb() {
+        return this.projectService.getWebByState(State.ACTIVE);
+    }
+
+    @Path("/project/inactives")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ProjectWeb> getProjectsInactivesWeb() {
+        return this.projectService.getWebByState(State.INACTIVE);
+    }
+
+    @Path("/project/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public ProjectWeb getProjectById(@PathParam("id") Long id)  {
+        return this.projectService.getWebById(id);
+    }
+
+
+    @Path("/project")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long saveProjectWeb(ProjectWeb projectWeb) throws GeneralAppException {
+        return this.projectService.save(projectWeb);
+    }
+
+    @Path("/project")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updateProject(ProjectWeb projectWeb) throws GeneralAppException {
+        return this.projectService.update(projectWeb);
+    }
+    
 
 
 
