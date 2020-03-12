@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.services;
 
 import com.sagatechs.generics.exceptions.GeneralAppException;
+import com.sagatechs.generics.persistence.model.State;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -161,6 +162,14 @@ public class OutputService {
 
     private List<Output> getByObjetiveId(Long id) {
         return this.outputDao.getByObjetiveId(id);
+    }
+
+    public List<OutputWeb> getWebsByStateAndPeriodIdandObjetiveId(Long periodoId, State state, Long objetiveId) {
+        return this.outputsToOutputWebs(this.getByStateAndPeriodIdandObjetiveId(periodoId,state,objetiveId));
+    }
+
+    public List<Output> getByStateAndPeriodIdandObjetiveId(Long periodoId, State state, Long objetiveId) {
+        return this.outputDao.getByStateAndPeriodIdandObjetiveId(periodoId,state,objetiveId);
     }
 
 }

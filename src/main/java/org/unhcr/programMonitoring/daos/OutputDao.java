@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.daos;
 
 import com.sagatechs.generics.persistence.GenericDaoJpa;
+import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.model.Objetive;
 import org.unhcr.programMonitoring.model.Output;
 
@@ -47,5 +48,19 @@ public class OutputDao extends GenericDaoJpa<Output, Long> {
         String sql = "select distinct o from Output o where o.objetive.id =:id";
         Query q = this.getEntityManager().createQuery(sql, Output.class).setParameter("id", id);
         return q.getResultList() ;
+    }
+
+    public List<Output> getByStateAndPeriodIdandObjetiveId(Long periodoId, State state, Long objetiveId) {
+
+        String sql = "select distinct o from PeriodPerformanceIndicatorAssigment ppia  inner join ppia.performanceIndicator pi " +
+                " inner join pi.output o inner join o.objetive ob inner join ob.rightGroup r " +
+                "where ppia.period.id = :periodoId and ppia.state = :state and ob.id = :objetiveId";
+
+        Query q = this.getEntityManager().createQuery(sql, Output.class);
+        q.setParameter("state", state);
+        q.setParameter("periodoId", periodoId);
+        q.setParameter("objetiveId", objetiveId);
+
+        return q.getResultList();
     }
 }

@@ -4,12 +4,10 @@ import com.sagatechs.generics.persistence.model.BaseEntity;
 import com.sagatechs.generics.persistence.model.State;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
-@Table(schema = "program_monitoring", name = "cantones")
-public class Canton extends BaseEntity<Long> {
+@Table(schema = "program_monitoring", name = "provincias")
+public class Provincia extends BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +22,6 @@ public class Canton extends BaseEntity<Long> {
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "provincia_id", foreignKey = @ForeignKey(name = "fk_cantones_provincias"))
-    private Provincia provincia;
 
     @Override
     public Long getId() {
@@ -60,13 +54,5 @@ public class Canton extends BaseEntity<Long> {
 
     public void setState(State state) {
         this.state = state;
-    }
-
-    public Provincia getProvincia() {
-        return provincia;
-    }
-
-    public void setProvincia(Provincia provincia) {
-        this.provincia = provincia;
     }
 }

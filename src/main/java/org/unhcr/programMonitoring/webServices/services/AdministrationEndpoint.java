@@ -4,7 +4,6 @@ import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.model.Objetive;
-import org.unhcr.programMonitoring.model.Project;
 import org.unhcr.programMonitoring.services.*;
 import org.unhcr.programMonitoring.webServices.model.*;
 
@@ -48,11 +47,24 @@ public class AdministrationEndpoint {
     @Inject
     PeriodPerformanceIndicatorAssigmentService periodPerformanceIndicatorAssigmentService;
 
+    @Inject
+    ProvinciaService provinciaService;
+
+    @Inject
+    CantonService cantonService;
+
     @Path("/rightGroup")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<RightGroupWeb> getAllRighGroups() {
         return this.rightGroupService.getAllRightGroupWebOrderedByCode();
+    }
+
+    @Path("/rightGroup/byPeriodActives/{periodId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<RightGroupWeb> getRighGroupsActivesByPeriodoId(@PathParam("periodId") Long periodId) {
+        return this.rightGroupService.getWebByStateAndPeriodId(periodId, State.ACTIVE);
     }
 
     @Path("/rightGroup")
@@ -88,6 +100,13 @@ public class AdministrationEndpoint {
         return this.objetiveService.getAllObjetiveWebsOrderedByCode();
     }
 
+    @Path("/objetive/byPeriodAndRightIdActives/{periodId}/{rightId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ObjetiveWeb> getObjetivesActivesByPeriodoIdAndRightId(@PathParam("periodId") Long periodId, @PathParam("rightId") Long rightId) {
+        return this.objetiveService.getWebtByStateAndPeriodIdandRighId(periodId, State.ACTIVE,rightId);
+    }
+
     @Path("/objetive")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -120,6 +139,13 @@ public class AdministrationEndpoint {
         return this.outputService.getAllOutputWebOrderedByCode();
     }
 
+    @Path("/output/byPeriodAndObjetiveIdActives/{periodId}/{objetiveId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<OutputWeb> getOutputsActivesByPeriodoIdAndObjetiveId(@PathParam("periodId") Long periodId, @PathParam("objetiveId") Long objetiveId) {
+        return this.outputService.getWebsByStateAndPeriodIdandObjetiveId(periodId, State.ACTIVE,objetiveId);
+    }
+
     @Path("/output")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -150,6 +176,13 @@ public class AdministrationEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public List<PerformanceIndicatorWeb> getAllPerformanceIndicators() {
         return this.performanceIndicatorService.getAllPerformanceIndicatorWebOrderedByCode();
+    }
+
+    @Path("/performanceIndicator/byPeriodAndOutputIdActives/{periodId}/{outputId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PerformanceIndicatorWeb> getPerformanceActivesByPeriodoIdAndOutputId(@PathParam("periodId") Long periodId, @PathParam("outputId") Long objetiveId) {
+        return this.performanceIndicatorService.getWebsByStateAndPeriodIdandOutputId(periodId, State.ACTIVE,objetiveId);
     }
 
     @Path("/performanceIndicator")
@@ -381,10 +414,20 @@ public class AdministrationEndpoint {
     public Long updateProject(ProjectWeb projectWeb) throws GeneralAppException {
         return this.projectService.update(projectWeb);
     }
-    
 
+    @Path("/provincia")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ProvinciaWeb> getAllProvinciaWebOrderedByName() {
+        return this.provinciaService.getAllWebOrderedByName();
+    }
 
-
+    @Path("/canton/provincia/{provinciaId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<CantonWeb> getCantonesWebByProvinciaIdOrderedByName(@PathParam("provinciaId") Long provinciaId) {
+        return this.cantonService.getWebByProvinciaOrderedByName(provinciaId);
+    }
 
 
 

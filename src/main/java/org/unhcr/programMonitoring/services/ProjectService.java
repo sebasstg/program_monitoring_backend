@@ -59,7 +59,7 @@ public class ProjectService {
             ProjectImplementerWeb projectImplentorWeb = null;
             PeriodWeb periodWeb = null;
             if (project.getPeriod() != null) {
-                periodWeb = this.periodService.getPeriodWebById(project.getId());
+                periodWeb = this.periodService.getPeriodWebById(project.getPeriod().getId());
             }
             if (project.getProjectImplementer() != null) {
                 projectImplentorWeb = this.projectImplementerService.getProjectImplementerWebById(project.getProjectImplementer().getId());

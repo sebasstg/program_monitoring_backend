@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.daos;
 
 import com.sagatechs.generics.persistence.GenericDaoJpa;
+import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.model.ProjectImplementer;
 import org.unhcr.programMonitoring.model.RightGroup;
 
@@ -42,5 +43,18 @@ public class RightGroupDao extends GenericDaoJpa<RightGroup, Long> {
 
     }
 
+
+    public List<RightGroup> getByStateAndPeriodId(Long periodoId, State state) {
+
+        String sql = "select distinct r from PeriodPerformanceIndicatorAssigment ppia  inner join ppia.performanceIndicator pi " +
+                " inner join pi.output o inner join o.objetive ob inner join ob.rightGroup r " +
+                "where ppia.period.id = :periodoId and ppia.state = :state";
+
+        Query q = this.getEntityManager().createQuery(sql, RightGroup.class);
+        q.setParameter("state", state);
+        q.setParameter("periodoId", periodoId);
+
+        return q.getResultList();
+    }
 
 }

@@ -1,12 +1,14 @@
 package org.unhcr.programMonitoring.services;
 
 import com.sagatechs.generics.exceptions.GeneralAppException;
+import com.sagatechs.generics.persistence.model.State;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.PerformanceIndicatorDao;
 import org.unhcr.programMonitoring.model.Output;
 import org.unhcr.programMonitoring.model.PerformanceIndicator;
+import org.unhcr.programMonitoring.webServices.model.OutputWeb;
 import org.unhcr.programMonitoring.webServices.model.PerformanceIndicatorWeb;
 
 import javax.ejb.Stateless;
@@ -161,5 +163,14 @@ public class PerformanceIndicatorService {
 
     private List<PerformanceIndicator> getByOutputId(Long id) {
         return this.performanceIndicatorDao.getByOutputId(id);
+    }
+
+    public List<PerformanceIndicatorWeb> getWebsByStateAndPeriodIdandOutputId(Long periodId, State state, Long outputId) {
+
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputId(periodId,state,outputId));
+    }
+
+    public List<PerformanceIndicator> getByStateAndPeriodIdandOutputId(Long periodoId, State state, Long outputId) {
+        return this.performanceIndicatorDao.getByStateAndPeriodIdandOutputId(periodoId, state, outputId);
     }
 }

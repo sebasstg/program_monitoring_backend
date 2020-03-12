@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.services;
 
 import com.sagatechs.generics.exceptions.GeneralAppException;
+import com.sagatechs.generics.persistence.model.State;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
@@ -142,5 +143,13 @@ public class RightGroupService {
                 }
             }
         }
+    }
+
+    public List<RightGroup> getByStateAndPeriodId(Long periodoId, State state) {
+        return this.rightGroupDao.getByStateAndPeriodId(periodoId, state);
+    }
+
+    public List<RightGroupWeb> getWebByStateAndPeriodId(Long periodoId, State state) {
+        return this.rightGroupsToRightGroupWebs(this.rightGroupDao.getByStateAndPeriodId(periodoId, state));
     }
 }
