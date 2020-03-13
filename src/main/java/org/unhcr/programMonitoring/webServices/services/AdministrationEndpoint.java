@@ -53,6 +53,7 @@ public class AdministrationEndpoint {
     @Inject
     CantonService cantonService;
 
+
     @Path("/rightGroup")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -104,7 +105,7 @@ public class AdministrationEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<ObjetiveWeb> getObjetivesActivesByPeriodoIdAndRightId(@PathParam("periodId") Long periodId, @PathParam("rightId") Long rightId) {
-        return this.objetiveService.getWebtByStateAndPeriodIdandRighId(periodId, State.ACTIVE,rightId);
+        return this.objetiveService.getWebtByStateAndPeriodIdandRighId(periodId, State.ACTIVE, rightId);
     }
 
     @Path("/objetive")
@@ -143,7 +144,7 @@ public class AdministrationEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<OutputWeb> getOutputsActivesByPeriodoIdAndObjetiveId(@PathParam("periodId") Long periodId, @PathParam("objetiveId") Long objetiveId) {
-        return this.outputService.getWebsByStateAndPeriodIdandObjetiveId(periodId, State.ACTIVE,objetiveId);
+        return this.outputService.getWebsByStateAndPeriodIdandObjetiveId(periodId, State.ACTIVE, objetiveId);
     }
 
     @Path("/output")
@@ -182,7 +183,7 @@ public class AdministrationEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<PerformanceIndicatorWeb> getPerformanceActivesByPeriodoIdAndOutputId(@PathParam("periodId") Long periodId, @PathParam("outputId") Long objetiveId) {
-        return this.performanceIndicatorService.getWebsByStateAndPeriodIdandOutputId(periodId, State.ACTIVE,objetiveId);
+        return this.performanceIndicatorService.getWebsByStateAndPeriodIdandOutputId(periodId, State.ACTIVE, objetiveId);
     }
 
     @Path("/performanceIndicator")
@@ -288,7 +289,7 @@ public class AdministrationEndpoint {
     @Path("/situation/actives")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SituationWeb>  getSituationsActivesWeb() {
+    public List<SituationWeb> getSituationsActivesWeb() {
         return this.situationService.getByState(State.ACTIVE);
     }
 
@@ -335,7 +336,7 @@ public class AdministrationEndpoint {
     @Path("/projectImplementer/actives")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectImplementerWeb>  getProjectImplementersActivesWeb() {
+    public List<ProjectImplementerWeb> getProjectImplementersActivesWeb() {
         return this.projectImplementerService.getByState(State.ACTIVE);
     }
 
@@ -349,7 +350,7 @@ public class AdministrationEndpoint {
     @Path("/projectImplementer/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ProjectImplementerWeb getProjectImplementerById(@PathParam("id") Long id)  {
+    public ProjectImplementerWeb getProjectImplementerById(@PathParam("id") Long id) {
         return this.projectImplementerService.getProjectImplementerWebById(id);
     }
 
@@ -382,7 +383,7 @@ public class AdministrationEndpoint {
     @Path("/project/actives")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ProjectWeb>  getProjectsActivesWeb() {
+    public List<ProjectWeb> getProjectsActivesWeb() {
         return this.projectService.getWebByState(State.ACTIVE);
     }
 
@@ -396,7 +397,7 @@ public class AdministrationEndpoint {
     @Path("/project/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public ProjectWeb getProjectById(@PathParam("id") Long id)  {
+    public ProjectWeb getProjectById(@PathParam("id") Long id) {
         return this.projectService.getWebById(id);
     }
 
@@ -429,7 +430,12 @@ public class AdministrationEndpoint {
         return this.cantonService.getWebByProvinciaOrderedByName(provinciaId);
     }
 
-
-
+    /**PeriodPerformanceIndicatorAssigmentWeb**/
+    @Path("/periodPerformanceIndicatorAssigmentWeb/byPeriodIdAndPerformanceIndicatorId/{periodId}/{performanceIndicatorId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public PeriodPerformanceIndicatorAssigmentWeb getWebByPeriodIdAndPerformanceIndicatorId(@PathParam("periodId") Long periodId,@PathParam("performanceIndicatorId") Long performanceIndicatorId) {
+        return this.periodPerformanceIndicatorAssigmentService.getWebByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId);
+    }
 
 }

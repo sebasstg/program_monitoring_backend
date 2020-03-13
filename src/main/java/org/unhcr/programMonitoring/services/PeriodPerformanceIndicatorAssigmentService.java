@@ -153,4 +153,11 @@ public class PeriodPerformanceIndicatorAssigmentService {
     public List<PeriodPerformanceIndicatorAssigmentWeb> getWebByPeriodId(Long periodId) {
         return this.periodPerformanceIndicatorAssigmentsToPeriodPerformanceIndicatorAssigmentWebs(this.periodPerformanceIndicatorAssigmentDao.getByPeriodId(periodId));
     }
+    public PeriodPerformanceIndicatorAssigmentWeb getWebByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
+        return this.periodPerformanceIndicatorAssigmentToPeriodPerformanceIndicatorAssigmentWeb(this.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId));
+    }
+
+    public PeriodPerformanceIndicatorAssigment getByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
+        return this.periodPerformanceIndicatorAssigmentDao.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId);
+    }
 }
