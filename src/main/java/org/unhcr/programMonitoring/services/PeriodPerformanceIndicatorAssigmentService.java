@@ -17,6 +17,7 @@ import java.util.List;
 @Stateless
 public class PeriodPerformanceIndicatorAssigmentService {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logger.getLogger(PeriodPerformanceIndicatorAssigmentService.class);
 
     @Inject
@@ -29,6 +30,7 @@ public class PeriodPerformanceIndicatorAssigmentService {
     PeriodService periodService;
 
 
+    @SuppressWarnings("unused")
     public List<PeriodPerformanceIndicatorAssigmentWeb> getByPeriodoId(Long periodId) {
 
         List<PeriodPerformanceIndicatorAssigment> ass = this.periodPerformanceIndicatorAssigmentDao.getByPeriodId(periodId);
@@ -45,7 +47,7 @@ public class PeriodPerformanceIndicatorAssigmentService {
 
         PeriodPerformanceIndicatorAssigment periodPerformanceIndicatorAssigmentT = this.periodPerformanceIndicatorAssigmentDao.getByPeriodIdAndPerformanceIndicatorId(periodPerformanceIndicatorAssigmentWeb.getPeriodWeb().getId(), periodPerformanceIndicatorAssigmentWeb.getPerformanceIndicatorWeb().getId());
         if (periodPerformanceIndicatorAssigmentWeb.getPerformanceIndicatorWeb() != null && periodPerformanceIndicatorAssigmentT != null) {
-            throw new GeneralAppException("El indicador " + periodPerformanceIndicatorAssigmentT.getPerformanceIndicator().getCode() + " ya se encuentra adignado al periodo " + periodPerformanceIndicatorAssigmentT.getPeriod().getYear() + ".", Response.Status.CONFLICT.getStatusCode());
+            throw new GeneralAppException("El indicador " + periodPerformanceIndicatorAssigmentT.getPerformanceIndicator().getDescription() + " ya se encuentra adignado al periodo " + periodPerformanceIndicatorAssigmentT.getPeriod().getYear() + ".", Response.Status.CONFLICT.getStatusCode());
         }
 
         PeriodPerformanceIndicatorAssigment periodPerformanceIndicatorAssigment = this.periodPerformanceIndicatorAssigmentWebToPeriodPerformanceIndicatorAssigment(periodPerformanceIndicatorAssigmentWeb);
@@ -65,7 +67,7 @@ public class PeriodPerformanceIndicatorAssigmentService {
         PeriodPerformanceIndicatorAssigment periodPerformanceIndicatorAssigmentOrg = this.periodPerformanceIndicatorAssigmentDao.getByPeriodIdAndPerformanceIndicatorId(periodPerformanceIndicatorAssigmentWeb.getPeriodWeb().getId(), periodPerformanceIndicatorAssigmentWeb.getPerformanceIndicatorWeb().getId());
 
         if (!periodPerformanceIndicatorAssigmentOrg.getId().equals(periodPerformanceIndicatorAssigmentWeb.getId())) {
-            throw new GeneralAppException("El indicador " + periodPerformanceIndicatorAssigmentOrg.getPerformanceIndicator().getCode() + " ya se encuentra adignado al periodo " + periodPerformanceIndicatorAssigmentOrg.getPeriod().getYear() + ".", Response.Status.CONFLICT.getStatusCode());
+            throw new GeneralAppException("El indicador " + periodPerformanceIndicatorAssigmentOrg.getPerformanceIndicator().getDescription() + " ya se encuentra adignado al periodo " + periodPerformanceIndicatorAssigmentOrg.getPeriod().getYear() + ".", Response.Status.CONFLICT.getStatusCode());
         }
 
         PeriodPerformanceIndicatorAssigment pN = this.periodPerformanceIndicatorAssigmentWebToPeriodPerformanceIndicatorAssigment(periodPerformanceIndicatorAssigmentWeb);
@@ -157,7 +159,7 @@ public class PeriodPerformanceIndicatorAssigmentService {
         return this.periodPerformanceIndicatorAssigmentToPeriodPerformanceIndicatorAssigmentWeb(this.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId));
     }
 
-    public PeriodPerformanceIndicatorAssigment getByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
+    private PeriodPerformanceIndicatorAssigment getByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
         return this.periodPerformanceIndicatorAssigmentDao.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId);
     }
 }

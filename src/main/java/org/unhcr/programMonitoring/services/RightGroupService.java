@@ -59,72 +59,76 @@ public class RightGroupService {
         rightGroup.setCode(rightGroupWeb.getCode());
         rightGroup.setDescription(rightGroupWeb.getDescription());
         rightGroup.setState(rightGroupWeb.getState());
-        this.validate(rightGroup);
+        this.validate(rightGroupWeb);
         this.rightGroupDao.save(rightGroup);
         return rightGroup.getId();
 
     }
 
 
-    private RightGroup save(RightGroup rightGroup) throws GeneralAppException {
+   /* private RightGroup save(RightGroup rightGroup) throws GeneralAppException {
         this.validate(rightGroup);
         return this.rightGroupDao.save(rightGroup);
 
-    }
+    }*/
 
     public Long update(RightGroupWeb rightGroupWeb) throws GeneralAppException {
         if (rightGroupWeb.getId() == null) {
             throw new GeneralAppException("El id es un campo obligatorio para actualizar el derecho", Response.Status.BAD_REQUEST.getStatusCode());
         }
         RightGroup rightGroup = this.find(rightGroupWeb.getId());
+
         if (rightGroup == null) {
             throw new GeneralAppException("No se pudo encontrar el derecho con id: " + rightGroupWeb.getId(), Response.Status.BAD_REQUEST.getStatusCode());
         }
+
+        this.validate(rightGroupWeb);
+
         rightGroup.setCode(rightGroupWeb.getCode());
         rightGroup.setDescription(rightGroupWeb.getDescription());
         rightGroup.setState(rightGroup.getState());
 
-        this.validate(rightGroup);
+
         this.update(rightGroup);
         return rightGroup.getId();
     }
 
     private RightGroup update(RightGroup rightGroup) throws GeneralAppException {
-        this.validate(rightGroup);
+
         return this.rightGroupDao.update(rightGroup);
     }
 
 
-    private void validate(RightGroup rightGroup) throws GeneralAppException {
-        if (StringUtils.isBlank(rightGroup.getCode())) {
+    private void validate(RightGroupWeb rightGroupWeb) throws GeneralAppException {
+        if (StringUtils.isBlank(rightGroupWeb.getCode())) {
             throw new GeneralAppException("El código es un valor requerido");
         }
-        if (StringUtils.isBlank(rightGroup.getDescription())) {
+        if (StringUtils.isBlank(rightGroupWeb.getDescription())) {
             throw new GeneralAppException("La descripción es un valor requerido");
         }
-        if (rightGroup.getState() == null) {
+        if (rightGroupWeb.getState() == null) {
             throw new GeneralAppException("El estado es un valor requerido");
         }
         List<RightGroup> result = new ArrayList<>();
-        result.addAll(this.rightGroupDao.getByCode(rightGroup.getCode()));
+        result.addAll(this.rightGroupDao.getByCode(rightGroupWeb.getCode()));
 
-        if (rightGroup.getId() == null && CollectionUtils.isNotEmpty(result)) {
+        if (rightGroupWeb.getId() == null && CollectionUtils.isNotEmpty(result)) {
             throw new GeneralAppException("Ya existe un Grupo de derechos con este código", Response.Status.CONFLICT.getStatusCode());
-        } else if (rightGroup.getId() != null && CollectionUtils.isNotEmpty(result)) {
+        } else if (rightGroupWeb.getId() != null && CollectionUtils.isNotEmpty(result)) {
             for (RightGroup rightGroupT : result) {
-                if (rightGroupT.getId() != rightGroup.getId()) {
+                if (rightGroupT.getId() != rightGroupWeb.getId()) {
                     throw new GeneralAppException("Ya existe un Grupo de derechos con este código", Response.Status.CONFLICT.getStatusCode());
                 }
             }
         }
         result = new ArrayList<>();
-        result.addAll(this.rightGroupDao.getByDescription(rightGroup.getDescription()));
+        result.addAll(this.rightGroupDao.getByDescription(rightGroupWeb.getDescription()));
 
-        if (rightGroup.getId() == null && CollectionUtils.isNotEmpty(result)) {
+        if (rightGroupWeb.getId() == null && CollectionUtils.isNotEmpty(result)) {
             throw new GeneralAppException("Ya existe un Grupo de derechos con esta descripción", Response.Status.CONFLICT.getStatusCode());
-        } else if (rightGroup.getId() != null && CollectionUtils.isNotEmpty(result)) {
+        } else if (rightGroupWeb.getId() != null && CollectionUtils.isNotEmpty(result)) {
             for (RightGroup rightGroupT : result) {
-                if (rightGroupT.getId() != rightGroup.getId()) {
+                if (rightGroupT.getId() != rightGroupWeb.getId()) {
                     throw new GeneralAppException("Ya existe un Grupo de derechos con esta descripción", Response.Status.CONFLICT.getStatusCode());
                 }
             }

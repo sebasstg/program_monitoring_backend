@@ -2,7 +2,7 @@ package org.unhcr.programMonitoring.model;
 
 public enum IndicatorType {
 	FOCUS("FOCUS"),
-	PROXY("PROXY"),
+	ESPECIFICO("ESPECÍFICO"),
 	GENERAL("GENERAL"),
 	LOCATION("LOCALIZACIÓN") ;
 

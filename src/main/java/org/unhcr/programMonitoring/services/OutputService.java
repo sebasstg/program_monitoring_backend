@@ -19,6 +19,7 @@ import java.util.List;
 @Stateless
 public class OutputService {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logger.getLogger(OutputService.class);
 
     @Inject
@@ -29,27 +30,30 @@ public class OutputService {
 
     public List<OutputWeb> getAllOutputWebOrderedByCode() {
 
-        List<OutputWeb> outputsWebs = new ArrayList<>();
         List<Output> outputs = this.getAllOrderedByCode();
         return this.outputsToOutputWebs(outputs);
     }
 
-    public List<Output> getAllOrderedByCode() {
+    private List<Output> getAllOrderedByCode() {
         return this.outputDao.getAllOrderedByCode();
+    }
+
+    public OutputWeb findWeb(Long id) {
+        return this.outputToOutputWeb(this.find(id));
     }
 
     public Output find(Long id) {
         return this.outputDao.find(id);
     }
 
-    public Long save(Output output) throws GeneralAppException {
-        this.validate(output);
+    public Long save(Output output) {
+
         return this.outputDao.save(output).getId();
 
     }
 
     public Long save(OutputWeb outputWeb) throws GeneralAppException {
-
+        this.validate(outputWeb);
         Output output = this.outputWebToOutput(outputWeb);
         this.save(output);
         return output.getId();
@@ -57,8 +61,8 @@ public class OutputService {
     }
 
 
-    public Output update(Output output) throws GeneralAppException {
-        this.validate(output);
+    public Output update(Output output) {
+
         return this.outputDao.update(output);
     }
 
@@ -67,58 +71,51 @@ public class OutputService {
         if (oOrg == null) {
             throw new GeneralAppException("No se puedo encontrar el output con id :" + oWeb.getId(), Response.Status.NOT_FOUND.getStatusCode());
         }
-
-        Output oNew =this.outputWebToOutput(oWeb);
+        this.validate(oWeb);
+        Output oNew = this.outputWebToOutput(oWeb);
         oOrg.setObjetive(oNew.getObjetive());
         oOrg.setDescription(oNew.getDescription());
         oOrg.setCode(oNew.getCode());
         oOrg.setState(oNew.getState());
 
-
-
-
-        this.validate(oOrg);
         this.outputDao.update(oOrg);
         return oOrg.getId();
 
     }
 
 
-    public void validate(Output output) throws GeneralAppException {
-        if (StringUtils.isBlank(output.getCode())) {
+    public void validate(OutputWeb outputWeb) throws GeneralAppException {
+        if (StringUtils.isBlank(outputWeb.getCode())) {
             throw new GeneralAppException("El código es un valor requerido");
         }
-        if (output.getObjetive() == null) {
+        if (outputWeb.getObjetiveWeb() == null) {
             throw new GeneralAppException("El grupo de derechos es un valor requerido");
         }
-        if (StringUtils.isBlank(output.getDescription())) {
+        if (StringUtils.isBlank(outputWeb.getDescription())) {
             throw new GeneralAppException("La descripción es un valor requerido");
         }
-        if (output.getState() == null) {
+        if (outputWeb.getState() == null) {
             throw new GeneralAppException("El estado es un valor requerido");
         }
-        List<Output> result = new ArrayList<>();
-        result.addAll(this.outputDao.getByCode(output.getCode()));
+        List<Output> result = new ArrayList<>(this.outputDao.getByCode(outputWeb.getCode()));
 
-        if (output.getId() == null && CollectionUtils.isNotEmpty(result)) {
+        if (outputWeb.getId() == null && CollectionUtils.isNotEmpty(result)) {
             throw new GeneralAppException("Ya existe un output con este código", Response.Status.CONFLICT.getStatusCode());
-        } else if (output.getId() != null && CollectionUtils.isNotEmpty(result)) {
+        } else if (outputWeb.getId() != null && CollectionUtils.isNotEmpty(result)) {
             for (Output outputT : result) {
-                if (outputT.getId() != output.getId()) {
+                if (!outputT.getId().equals(outputWeb.getId())) {
                     throw new GeneralAppException("Ya existe un output con este código", Response.Status.CONFLICT.getStatusCode());
                 }
             }
         }
-        result = new ArrayList<>();
-        result.addAll(this.outputDao.getByDescription(output.getDescription()));
+        result = new ArrayList<>(this.outputDao.getByDescription(outputWeb.getDescription()));
 
-        if (output.getId() == null && CollectionUtils.isNotEmpty(result)) {
+        if (outputWeb.getId() == null && CollectionUtils.isNotEmpty(result)) {
             throw new GeneralAppException("Ya existe un Grupo de derechos con esta descripción", Response.Status.CONFLICT.getStatusCode());
-        } else if (output.getId() != null && CollectionUtils.isNotEmpty(result)) {
+        } else if (outputWeb.getId() != null && CollectionUtils.isNotEmpty(result)) {
             for (Output outputT : result) {
-                if (outputT.getId() != output.getId()) {
+                if (!outputT.getId().equals(outputWeb.getId()))
                     throw new GeneralAppException("Ya existe un Grupo de derechos con esta descripción", Response.Status.CONFLICT.getStatusCode());
-                }
             }
         }
     }
@@ -165,11 +162,11 @@ public class OutputService {
     }
 
     public List<OutputWeb> getWebsByStateAndPeriodIdandObjetiveId(Long periodoId, State state, Long objetiveId) {
-        return this.outputsToOutputWebs(this.getByStateAndPeriodIdandObjetiveId(periodoId,state,objetiveId));
+        return this.outputsToOutputWebs(this.getByStateAndPeriodIdandObjetiveId(periodoId, state, objetiveId));
     }
 
-    public List<Output> getByStateAndPeriodIdandObjetiveId(Long periodoId, State state, Long objetiveId) {
-        return this.outputDao.getByStateAndPeriodIdandObjetiveId(periodoId,state,objetiveId);
+    private List<Output> getByStateAndPeriodIdandObjetiveId(Long periodoId, State state, Long objetiveId) {
+        return this.outputDao.getByStateAndPeriodIdandObjetiveId(periodoId, state, objetiveId);
     }
 
 }

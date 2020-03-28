@@ -2,15 +2,17 @@ package org.unhcr.programMonitoring.webServices.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sagatechs.generics.persistence.model.State;
+import org.unhcr.programMonitoring.model.IndicatorType;
+import org.unhcr.programMonitoring.model.PerformanceIndicator;
 
 public class PerformanceIndicatorWeb {
 
     public PerformanceIndicatorWeb() {
     }
 
-    public PerformanceIndicatorWeb(Long id, String code, String description, State state, OutputWeb outputWeb) {
+    public PerformanceIndicatorWeb(Long id,  String description, State state, IndicatorType indicatorType, OutputWeb outputWeb) {
         this.id = id;
-        this.code = code;
+        this.indicatorType = indicatorType;
         this.description = description;
         this.state = state;
         this.outputWeb = outputWeb;
@@ -18,11 +20,12 @@ public class PerformanceIndicatorWeb {
 
     private Long id;
 
-    private String code;
 
     private String description;
 
     private State state;
+
+    private IndicatorType indicatorType;
 
     @JsonProperty("output")
     private OutputWeb outputWeb;
@@ -33,14 +36,6 @@ public class PerformanceIndicatorWeb {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getDescription() {
@@ -65,5 +60,13 @@ public class PerformanceIndicatorWeb {
 
     public void setOutputWeb(OutputWeb outputWeb) {
         this.outputWeb = outputWeb;
+    }
+
+    public IndicatorType getIndicatorType() {
+        return indicatorType;
+    }
+
+    public void setIndicatorType(IndicatorType indicatorType) {
+        this.indicatorType = indicatorType;
     }
 }

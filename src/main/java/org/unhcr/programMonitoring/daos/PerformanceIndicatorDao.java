@@ -2,13 +2,13 @@ package org.unhcr.programMonitoring.daos;
 
 import com.sagatechs.generics.persistence.GenericDaoJpa;
 import com.sagatechs.generics.persistence.model.State;
-import org.unhcr.programMonitoring.model.Objetive;
 import org.unhcr.programMonitoring.model.PerformanceIndicator;
 
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 @Stateless
 public class PerformanceIndicatorDao extends GenericDaoJpa<PerformanceIndicator, Long> {
 
@@ -18,7 +18,7 @@ public class PerformanceIndicatorDao extends GenericDaoJpa<PerformanceIndicator,
 
 
     public List<PerformanceIndicator> getAllOrderedByCode() {
-        String sql = "select distinct o from PerformanceIndicator o order by o.code";
+        String sql = "select distinct o from PerformanceIndicator o order by o.description";
         Query q = this.getEntityManager().createQuery(sql, PerformanceIndicator.class);
 
         return q.getResultList();
@@ -26,13 +26,6 @@ public class PerformanceIndicatorDao extends GenericDaoJpa<PerformanceIndicator,
     }
 
 
-    public List<PerformanceIndicator> getByCode(String code) {
-        String sql = "select distinct o from PerformanceIndicator o where o.code =:code";
-        Query q = this.getEntityManager().createQuery(sql, PerformanceIndicator.class).setParameter("code", code);
-
-        return q.getResultList();
-
-    }
 
     public List<PerformanceIndicator> getByDescription(String description) {
         String sql = "select distinct o from PerformanceIndicator o where o.description =:description";

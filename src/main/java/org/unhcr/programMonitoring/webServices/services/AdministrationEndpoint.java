@@ -133,6 +133,13 @@ public class AdministrationEndpoint {
      * outputs
      **/
 
+    @Path("/output/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public OutputWeb getOutputById(@PathParam("id") Long id) {
+        return this.outputService.findWeb(id);
+    }
+
     @Path("/output")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

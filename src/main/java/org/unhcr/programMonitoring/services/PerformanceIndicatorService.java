@@ -8,7 +8,6 @@ import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.PerformanceIndicatorDao;
 import org.unhcr.programMonitoring.model.Output;
 import org.unhcr.programMonitoring.model.PerformanceIndicator;
-import org.unhcr.programMonitoring.webServices.model.OutputWeb;
 import org.unhcr.programMonitoring.webServices.model.PerformanceIndicatorWeb;
 
 import javax.ejb.Stateless;
@@ -20,6 +19,7 @@ import java.util.List;
 @Stateless
 public class PerformanceIndicatorService {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logger.getLogger(PerformanceIndicatorService.class);
 
     @Inject
@@ -30,12 +30,12 @@ public class PerformanceIndicatorService {
 
     public List<PerformanceIndicatorWeb> getAllPerformanceIndicatorWebOrderedByCode() {
 
-        List<PerformanceIndicatorWeb> performanceIndicatorsWebs = new ArrayList<>();
+
         List<PerformanceIndicator> performanceIndicators = this.getAllOrderedByCode();
         return this.performanceIndicatorsToPerformanceIndicatorWebs(performanceIndicators);
     }
 
-    public List<PerformanceIndicator> getAllOrderedByCode() {
+    private List<PerformanceIndicator> getAllOrderedByCode() {
         return this.performanceIndicatorDao.getAllOrderedByCode();
     }
 
@@ -72,11 +72,8 @@ public class PerformanceIndicatorService {
         PerformanceIndicator oNew =this.performanceIndicatorWebToPerformanceIndicator(oWeb);
         oOrg.setOutput(oNew.getOutput());
         oOrg.setDescription(oNew.getDescription());
-        oOrg.setCode(oNew.getCode());
         oOrg.setState(oNew.getState());
-
-
-
+        oOrg.setIndicatorType(oNew.getIndicatorType());
 
         this.validate(oOrg);
         this.performanceIndicatorDao.update(oOrg);
@@ -86,9 +83,7 @@ public class PerformanceIndicatorService {
 
 
     public void validate(PerformanceIndicator performanceIndicator) throws GeneralAppException {
-        if (StringUtils.isBlank(performanceIndicator.getCode())) {
-            throw new GeneralAppException("El código es un valor requerido");
-        }
+
         if (performanceIndicator.getOutput() == null) {
             throw new GeneralAppException("El output es un valor requerido");
         }
@@ -98,37 +93,36 @@ public class PerformanceIndicatorService {
         if (performanceIndicator.getState() == null) {
             throw new GeneralAppException("El estado es un valor requerido");
         }
-        List<PerformanceIndicator> result = new ArrayList<>();
-        result.addAll(this.performanceIndicatorDao.getByCode(performanceIndicator.getCode()));
+        List<PerformanceIndicator> result = new ArrayList<>(this.performanceIndicatorDao.getByDescription(performanceIndicator.getDescription()));
 
         if (performanceIndicator.getId() == null && CollectionUtils.isNotEmpty(result)) {
-            throw new GeneralAppException("Ya existe un performanceIndicator con este código", Response.Status.CONFLICT.getStatusCode());
+            throw new GeneralAppException("Ya existe un performanceIndicator con este nombre", Response.Status.CONFLICT.getStatusCode());
         } else if (performanceIndicator.getId() != null && CollectionUtils.isNotEmpty(result)) {
             for (PerformanceIndicator performanceIndicatorT : result) {
-                if (performanceIndicatorT.getId() != performanceIndicator.getId()) {
+                if (!performanceIndicatorT.getId().equals(performanceIndicator.getId())) {
                     throw new GeneralAppException("Ya existe un performanceIndicator con este código", Response.Status.CONFLICT.getStatusCode());
                 }
             }
         }
-        result = new ArrayList<>();
-        result.addAll(this.performanceIndicatorDao.getByDescription(performanceIndicator.getDescription()));
+        result = new ArrayList<>(this.performanceIndicatorDao.getByDescription(performanceIndicator.getDescription()));
 
         if (performanceIndicator.getId() == null && CollectionUtils.isNotEmpty(result)) {
             throw new GeneralAppException("Ya existe un Grupo de derechos con esta descripción", Response.Status.CONFLICT.getStatusCode());
         } else if (performanceIndicator.getId() != null && CollectionUtils.isNotEmpty(result)) {
             for (PerformanceIndicator performanceIndicatorT : result) {
-                if (performanceIndicatorT.getId() != performanceIndicator.getId()) {
+                if (!performanceIndicatorT.getId().equals(performanceIndicator.getId())) {
                     throw new GeneralAppException("Ya existe un Grupo de derechos con esta descripción", Response.Status.CONFLICT.getStatusCode());
                 }
             }
         }
     }
 
-    public PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
+
+    PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
         if (performanceIndicator == null) {
             return null;
         } else {
-            return new PerformanceIndicatorWeb(performanceIndicator.getId(), performanceIndicator.getCode(), performanceIndicator.getDescription(), performanceIndicator.getState(), this.outputService.outputToOutputWeb(performanceIndicator.getOutput()));
+            return new PerformanceIndicatorWeb(performanceIndicator.getId(), performanceIndicator.getDescription(), performanceIndicator.getState(),  performanceIndicator.getIndicatorType(),this.outputService.outputToOutputWeb(performanceIndicator.getOutput()));
         }
     }
 
@@ -145,7 +139,7 @@ public class PerformanceIndicatorService {
     private PerformanceIndicator performanceIndicatorWebToPerformanceIndicator(PerformanceIndicatorWeb performanceIndicatorWeb) {
         PerformanceIndicator o = new PerformanceIndicator();
         o.setId(performanceIndicatorWeb.getId());
-        o.setCode(performanceIndicatorWeb.getCode());
+        o.setIndicatorType(performanceIndicatorWeb.getIndicatorType());
         o.setState(performanceIndicatorWeb.getState());
         o.setDescription(performanceIndicatorWeb.getDescription());
         Output output = null;
@@ -170,7 +164,7 @@ public class PerformanceIndicatorService {
         return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputId(periodId,state,outputId));
     }
 
-    public List<PerformanceIndicator> getByStateAndPeriodIdandOutputId(Long periodoId, State state, Long outputId) {
+    private List<PerformanceIndicator> getByStateAndPeriodIdandOutputId(Long periodoId, State state, Long outputId) {
         return this.performanceIndicatorDao.getByStateAndPeriodIdandOutputId(periodoId, state, outputId);
     }
 }

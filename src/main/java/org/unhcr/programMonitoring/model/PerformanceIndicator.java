@@ -13,9 +13,6 @@ public class PerformanceIndicator extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "code", nullable = false, unique = true)
-    private String code;
-
     @Column(name = "description", nullable = false, unique = true)
     private String description;
 
@@ -23,9 +20,15 @@ public class PerformanceIndicator extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private State state;
 
+    @Column(name = "indicator_type", nullable = false,updatable = false)
+    @Enumerated(EnumType.STRING)
+    private IndicatorType indicatorType;
+
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "output_id",foreignKey = @ForeignKey(name = "fk_performance_indicators_outputs"))
     Output output;
+
+
 
 
     @Override
@@ -37,13 +40,7 @@ public class PerformanceIndicator extends BaseEntity<Long> {
         this.id = id;
     }
 
-    public String getCode() {
-        return code;
-    }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
 
     public String getDescription() {
         return description;
@@ -67,5 +64,13 @@ public class PerformanceIndicator extends BaseEntity<Long> {
 
     public void setOutput(Output output) {
         this.output = output;
+    }
+
+    public IndicatorType getIndicatorType() {
+        return indicatorType;
+    }
+
+    public void setIndicatorType(IndicatorType indicatorType) {
+        this.indicatorType = indicatorType;
     }
 }
