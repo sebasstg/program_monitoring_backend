@@ -26,6 +26,10 @@ public class PeriodService {
         return this.periodDao.getAllPeriodResumeWebOrderedByYear();
     }
 
+    public List<PeriodResumeWeb> getPeriodResumeWebByPeriodId(Long periodId) {
+        return this.periodDao.getPeriodResumeWebByPeriodId(periodId);
+    }
+
     public PeriodWeb getPeriodWebById(Long id) {
         Period period = this.periodDao.find(id);
 

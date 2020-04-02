@@ -87,12 +87,12 @@ public class ProjectImplementerService {
         //code
         List<ProjectImplementer> byCodes = this.projectImplementerDao.getByCode(projectImplementerWeb.getCode());
         if (projectImplementerWeb.getId() == null && CollectionUtils.isNotEmpty(byCodes)) {
-            throw new GeneralAppException("Ya existe una situación con el código: " + projectImplementerWeb.getCode(), Response.Status.CONFLICT.getStatusCode());
+            throw new GeneralAppException("Ya existe un socio con el código: " + projectImplementerWeb.getCode(), Response.Status.CONFLICT.getStatusCode());
         }
         if (projectImplementerWeb.getId() != null && CollectionUtils.isNotEmpty(byCodes)) {
             for (ProjectImplementer projectImplementer : byCodes) {
                 if (!projectImplementerWeb.getId().equals(projectImplementer.getId())) {
-                    new GeneralAppException("Ya existe una situación con el código: " + projectImplementerWeb.getCode(), Response.Status.CONFLICT.getStatusCode());
+                    new GeneralAppException("Ya existe un socio con el código: " + projectImplementerWeb.getCode(), Response.Status.CONFLICT.getStatusCode());
                 }
             }
 
@@ -126,7 +126,7 @@ public class ProjectImplementerService {
         return result;
     }
 
-    private ProjectImplementerWeb projectImplementerToProjectImplementerWeb(ProjectImplementer projectImplementer) {
+    public ProjectImplementerWeb projectImplementerToProjectImplementerWeb(ProjectImplementer projectImplementer) {
 
         if (projectImplementer == null) return null;
         return new ProjectImplementerWeb(projectImplementer.getId(), projectImplementer.getCode(), projectImplementer.getDescription(), projectImplementer.getState());

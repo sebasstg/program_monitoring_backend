@@ -17,6 +17,11 @@ public class Project extends BaseEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Column(name = "period_implementer_code")
+    private String periodImplementerCode;
+
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -125,5 +130,13 @@ public class Project extends BaseEntity<Long> {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public String getPeriodImplementerCode() {
+        return periodImplementerCode;
+    }
+
+    public void setPeriodImplementerCode(String periodImplementerCode) {
+        this.periodImplementerCode = periodImplementerCode;
     }
 }

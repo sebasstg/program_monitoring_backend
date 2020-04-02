@@ -3,6 +3,7 @@ package org.unhcr.programMonitoring.webServices.services;
 import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
 import org.jboss.logging.Logger;
+import org.unhcr.programMonitoring.model.IndicatorType;
 import org.unhcr.programMonitoring.model.Objetive;
 import org.unhcr.programMonitoring.services.*;
 import org.unhcr.programMonitoring.webServices.model.*;
@@ -154,6 +155,15 @@ public class AdministrationEndpoint {
         return this.outputService.getWebsByStateAndPeriodIdandObjetiveId(periodId, State.ACTIVE, objetiveId);
     }
 
+
+
+    @Path("/output/byPeriodActives/{periodId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<OutputWeb> getOutputsActivesByPeriodoId(@PathParam("periodId") Long periodId) {
+        return this.outputService.getWebsByStateAndPeriodId(periodId, State.ACTIVE);
+    }
+
     @Path("/output")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -193,6 +203,22 @@ public class AdministrationEndpoint {
         return this.performanceIndicatorService.getWebsByStateAndPeriodIdandOutputId(periodId, State.ACTIVE, objetiveId);
     }
 
+    @Path("/performanceIndicator/byPeriodAndOutputIdAndIndicatorTypeActives/{periodId}/{outputId}/{indicatorType}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PerformanceIndicatorWeb> getPerformanceActivesByPeriodoIdAndOutputId(@PathParam("periodId") Long periodId,
+                                                                                     @PathParam("outputId") Long objetiveId,
+                                                                                     @PathParam("indicatorType") IndicatorType indicatorType) {
+        return this.performanceIndicatorService.getWebByStateAndPeriodIdandOutputIdAndIndicatorType(periodId, State.ACTIVE, objetiveId, indicatorType);
+    }
+
+    @Path("/performanceIndicator/byType/{type}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PerformanceIndicatorWeb> getPerformanceActivesByIndicatorType(@PathParam("type") IndicatorType indicatorType) {
+        return this.performanceIndicatorService.getWebsByIndicatorType(indicatorType, State.ACTIVE);
+    }
+
     @Path("/performanceIndicator")
     @POST
     @Produces(MediaType.APPLICATION_JSON)
@@ -214,6 +240,13 @@ public class AdministrationEndpoint {
         return this.performanceIndicatorService.getWebByOutputId(id);
     }
 
+    @Path("performanceIndicator/output/{id}/type/{type}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PerformanceIndicatorWeb> getPerformanceIndicatorsByOutputIdAndType(@PathParam("id") Long id,@PathParam("type") IndicatorType type) throws GeneralAppException {
+        return this.performanceIndicatorService.getWebByOutputIdAndType(id,type);
+    }
+
     /**
      * Period
      **/
@@ -223,6 +256,14 @@ public class AdministrationEndpoint {
     public List<PeriodResumeWeb> getAllPeriodsResumeWeb() {
         return this.periodService.getAllPeriodResumeWebOrderedByYear();
     }
+
+    @Path("/period/resume/byPeriod/{periodId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PeriodResumeWeb> getPeriodsResumeWebByPeriodId(@PathParam("periodId") Long periodId) {
+        return this.periodService.getPeriodResumeWebByPeriodId(periodId);
+    }
+
 
     @Path("/period/actives")
     @GET
@@ -262,6 +303,16 @@ public class AdministrationEndpoint {
 
 
     //PeriodPerformanceIndicatorAssigment
+    @Path("/periodPerformanceIndicatorAssigment/byPeriodAndOutputIdAndIndicatorTypeActives/{periodId}/{outputId}/{indicatorType}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PeriodPerformanceIndicatorAssigmentWeb> getPeriodPerformanceIndicatorAssigmentByPeriodId(@PathParam("periodId") Long periodId,
+                                                                                                         @PathParam("outputId") Long outputId,
+                                                                                                         @PathParam("indicatorType") IndicatorType indicatorType) {
+        return this.periodPerformanceIndicatorAssigmentService.getWebByStateAndPeriodIdandOutputIdAndIndicatorType(periodId,outputId,indicatorType,State.ACTIVE);
+    }
+
+
     @Path("/periodPerformanceIndicatorAssigment/period/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -406,6 +457,13 @@ public class AdministrationEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public ProjectWeb getProjectById(@PathParam("id") Long id) {
         return this.projectService.getWebById(id);
+    }
+
+    @Path("/project/resume/byPeriod/{periodId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ProjectResumeWeb> getProjecResumetByPeriodId(@PathParam("periodId") Long periodId) {
+        return this.projectService.getResumeWebByPeriodId(periodId);
     }
 
 

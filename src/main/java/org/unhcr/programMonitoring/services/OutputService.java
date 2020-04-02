@@ -6,6 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.OutputDao;
+import org.unhcr.programMonitoring.model.IndicatorType;
 import org.unhcr.programMonitoring.model.Objetive;
 import org.unhcr.programMonitoring.model.Output;
 import org.unhcr.programMonitoring.webServices.model.OutputWeb;
@@ -168,5 +169,14 @@ public class OutputService {
     private List<Output> getByStateAndPeriodIdandObjetiveId(Long periodoId, State state, Long objetiveId) {
         return this.outputDao.getByStateAndPeriodIdandObjetiveId(periodoId, state, objetiveId);
     }
+
+    private List<Output> getByStateAndPeriodId(Long periodoId, State state) {
+        return this.outputDao.getByStateAndPeriodId(periodoId, state);
+    }
+
+    public List<OutputWeb> getWebsByStateAndPeriodId(Long periodId, State state) {
+        return this.outputsToOutputWebs(this.getByStateAndPeriodId(periodId, state));
+    }
+
 
 }

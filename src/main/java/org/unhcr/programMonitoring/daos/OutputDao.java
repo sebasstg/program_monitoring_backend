@@ -54,12 +54,28 @@ public class OutputDao extends GenericDaoJpa<Output, Long> {
 
         String sql = "select distinct o from PeriodPerformanceIndicatorAssigment ppia  inner join ppia.performanceIndicator pi " +
                 " inner join pi.output o inner join o.objetive ob inner join ob.rightGroup r " +
-                "where ppia.period.id = :periodoId and ppia.state = :state and ob.id = :objetiveId";
+                "where ppia.period.id = :periodoId and ppia.state = :state and ob.id = :objetiveId " +
+                " order by o.code";
 
         Query q = this.getEntityManager().createQuery(sql, Output.class);
         q.setParameter("state", state);
         q.setParameter("periodoId", periodoId);
         q.setParameter("objetiveId", objetiveId);
+
+        return q.getResultList();
+    }
+
+    public List<Output> getByStateAndPeriodId(Long periodoId, State state) {
+
+        String sql = "select distinct o from PeriodPerformanceIndicatorAssigment ppia  inner join ppia.performanceIndicator pi " +
+                " inner join pi.output o inner join o.objetive ob inner join ob.rightGroup r " +
+                "where ppia.period.id = :periodoId and ppia.state = :state" +
+                " order by o.code";
+
+        Query q = this.getEntityManager().createQuery(sql, Output.class);
+        q.setParameter("state", state);
+        q.setParameter("periodoId", periodoId);
+
 
         return q.getResultList();
     }

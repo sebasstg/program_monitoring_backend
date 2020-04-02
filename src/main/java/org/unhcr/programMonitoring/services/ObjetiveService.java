@@ -162,7 +162,7 @@ public class ObjetiveService {
     }
 
     public List<ObjetiveWeb  > getWebtByStateAndPeriodIdandRighId(Long periodoId, State state, Long rightId) {
-        return this.objetivesToObjetiveWebs(this.getByStateAndPeriodIdandRighId(periodoId,state,periodoId));
+        return this.objetivesToObjetiveWebs(this.getByStateAndPeriodIdandRighId(periodoId,state,rightId));
     }
     public List<Objetive> getByStateAndPeriodIdandRighId(Long periodoId, State state, Long rightId) {
         return this.objetiveDao.getByStateAndPeriodIdandRighId(periodoId,state,rightId);

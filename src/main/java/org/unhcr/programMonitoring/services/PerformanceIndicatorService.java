@@ -6,6 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.PerformanceIndicatorDao;
+import org.unhcr.programMonitoring.model.IndicatorType;
 import org.unhcr.programMonitoring.model.Output;
 import org.unhcr.programMonitoring.model.PerformanceIndicator;
 import org.unhcr.programMonitoring.webServices.model.PerformanceIndicatorWeb;
@@ -118,7 +119,7 @@ public class PerformanceIndicatorService {
     }
 
 
-    PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
+   public PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
         if (performanceIndicator == null) {
             return null;
         } else {
@@ -164,7 +165,33 @@ public class PerformanceIndicatorService {
         return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputId(periodId,state,outputId));
     }
 
+    public List<PerformanceIndicatorWeb> getWebByStateAndPeriodIdandOutputIdAndIndicatorType(Long periodId, State state, Long outputId, IndicatorType indicatorType) {
+
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputIdAndIndicatorType(periodId,state,outputId, indicatorType));
+    }
+
+    public List<PerformanceIndicatorWeb> getWebsByIndicatorType(IndicatorType indicatorType, State state) {
+
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByIndicatorType(indicatorType,state));
+    }
+
+    private List<PerformanceIndicator> getByIndicatorType(IndicatorType indicatorType, State state) {
+        return this.performanceIndicatorDao.getByIndicatorType(indicatorType, state);
+    }
+
     private List<PerformanceIndicator> getByStateAndPeriodIdandOutputId(Long periodoId, State state, Long outputId) {
         return this.performanceIndicatorDao.getByStateAndPeriodIdandOutputId(periodoId, state, outputId);
+    }
+
+    private List<PerformanceIndicator> getByStateAndPeriodIdandOutputIdAndIndicatorType(Long periodoId, State state, Long outputId, IndicatorType indicatorType) {
+        return this.performanceIndicatorDao.getByStateAndPeriodIdandOutputIdAndIndicatorType(periodoId, state, outputId,indicatorType);
+    }
+
+    public List<PerformanceIndicatorWeb> getWebByOutputIdAndType(Long id, IndicatorType type) {
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByOutputIdAndType(id,type));
+    }
+
+    private List<PerformanceIndicator> getByOutputIdAndType(Long id, IndicatorType type) {
+        return this.performanceIndicatorDao.getByOutputIdAndType(id,type);
     }
 }

@@ -3,6 +3,7 @@ package org.unhcr.programMonitoring.webServices.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.model.DisaggregationType;
+import org.unhcr.programMonitoring.model.IndicatorType;
 import org.unhcr.programMonitoring.model.MeasureType;
 
 public class PeriodPerformanceIndicatorAssigmentWeb {
@@ -12,13 +13,15 @@ public class PeriodPerformanceIndicatorAssigmentWeb {
     }
 
     public PeriodPerformanceIndicatorAssigmentWeb(Long id, DisaggregationType disaggregationType, PerformanceIndicatorWeb performanceIndicatorWeb,
-                                                  State state, MeasureType measureType, PeriodWeb periodWeb) {
+                                                  State state, MeasureType measureType, PeriodWeb periodWeb, IndicatorType indicatorType) {
         this.id = id;
         this.disaggregationType = disaggregationType;
         this.performanceIndicatorWeb = performanceIndicatorWeb;
         this.state = state;
         this.measureType = measureType;
         this.periodWeb=periodWeb;
+        this.indicatorType=indicatorType;
+
     }
 
 
@@ -36,6 +39,8 @@ public class PeriodPerformanceIndicatorAssigmentWeb {
 
     @JsonProperty("period")
     private PeriodWeb periodWeb;
+
+    private IndicatorType indicatorType;
 
     public Long getId() {
         return id;
@@ -83,5 +88,13 @@ public class PeriodPerformanceIndicatorAssigmentWeb {
 
     public void setPeriodWeb(PeriodWeb periodWeb) {
         this.periodWeb = periodWeb;
+    }
+
+    public IndicatorType getIndicatorType() {
+        return indicatorType;
+    }
+
+    public void setIndicatorType(IndicatorType indicatorType) {
+        this.indicatorType = indicatorType;
     }
 }

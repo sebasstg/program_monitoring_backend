@@ -48,7 +48,8 @@ public class RightGroupDao extends GenericDaoJpa<RightGroup, Long> {
 
         String sql = "select distinct r from PeriodPerformanceIndicatorAssigment ppia  inner join ppia.performanceIndicator pi " +
                 " inner join pi.output o inner join o.objetive ob inner join ob.rightGroup r " +
-                "where ppia.period.id = :periodoId and ppia.state = :state";
+                "where ppia.period.id = :periodoId and ppia.state = :state " +
+                " order by r.code ";
 
         Query q = this.getEntityManager().createQuery(sql, RightGroup.class);
         q.setParameter("state", state);

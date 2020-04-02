@@ -16,7 +16,7 @@ public class ProjectWeb {
     public ProjectWeb() {
     }
 
-    public ProjectWeb(Long id, String name, LocalDate reportingStartingDate, LocalDate reportingFinishingDate, State state, PeriodWeb periodWeb, ProjectImplementerWeb projectImplementerWeb) {
+    public ProjectWeb(Long id, String periodImplementerCode, String name, LocalDate reportingStartingDate, LocalDate reportingFinishingDate, State state, PeriodWeb periodWeb, ProjectImplementerWeb projectImplementerWeb) {
         this.id = id;
         this.name = name;
         this.reportingStartingDate = reportingStartingDate;
@@ -24,6 +24,7 @@ public class ProjectWeb {
         this.state = state;
         this.periodWeb = periodWeb;
         this.projectImplementerWeb = projectImplementerWeb;
+        this.periodImplementerCode=periodImplementerCode;
     }
 
     private Long id;
@@ -48,6 +49,8 @@ public class ProjectWeb {
 
     @JsonProperty("situations")
     private List<SituationWeb> situationWeb;
+
+    private String periodImplementerCode;
 
     public Long getId() {
         return id;
@@ -111,5 +114,13 @@ public class ProjectWeb {
 
     public void setSituationWeb(List<SituationWeb> situationWeb) {
         this.situationWeb = situationWeb;
+    }
+
+    public String getPeriodImplementerCode() {
+        return periodImplementerCode;
+    }
+
+    public void setPeriodImplementerCode(String periodImplementerCode) {
+        this.periodImplementerCode = periodImplementerCode;
     }
 }

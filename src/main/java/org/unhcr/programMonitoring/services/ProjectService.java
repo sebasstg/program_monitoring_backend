@@ -7,10 +7,7 @@ import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.ProjectDao;
 import org.unhcr.programMonitoring.daos.SituationAssigmentDao;
 import org.unhcr.programMonitoring.model.*;
-import org.unhcr.programMonitoring.webServices.model.PeriodWeb;
-import org.unhcr.programMonitoring.webServices.model.ProjectImplementerWeb;
-import org.unhcr.programMonitoring.webServices.model.ProjectWeb;
-import org.unhcr.programMonitoring.webServices.model.SituationWeb;
+import org.unhcr.programMonitoring.webServices.model.*;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -68,7 +65,7 @@ public class ProjectService {
             // las situaciones
             Set<SituationAssigment> situacions = project.getSituationAssigments();
 
-            ProjectWeb projectWeb = new ProjectWeb(project.getId(), project.getName(), project.getReportingStartingDate(), project.getReportingFinishingDate(), project.getState(), periodWeb, projectImplentorWeb);
+            ProjectWeb projectWeb = new ProjectWeb(project.getId(), project.getPeriodImplementerCode(), project.getName(), project.getReportingStartingDate(), project.getReportingFinishingDate(), project.getState(), periodWeb, projectImplentorWeb);
             List<SituationWeb> situacionsWeb = this.situationAssigmentsToSituationsWeb(new ArrayList<>(situacions));
             projectWeb.setSituationWeb(situacionsWeb);
             return projectWeb;
@@ -168,7 +165,7 @@ public class ProjectService {
         project.setName(projectWeb.getName());
         project.setReportingStartingDate(projectWeb.getReportingStartingDate());
         project.setReportingFinishingDate(projectWeb.getReportingFinishingDate());
-
+        project.setPeriodImplementerCode(projectWeb.getPeriodImplementerCode());
         this.projectDao.update(project);
         return project.getId();
     }
@@ -203,7 +200,7 @@ public class ProjectService {
             }
             if (projectWeb.getId() != null && CollectionUtils.isNotEmpty(result)) {
                 for (Project project : result) {
-                    if (projectWeb.getId().equals(project.getId())) {
+                    if (!projectWeb.getId().equals(project.getId())) {
                         throw new GeneralAppException("Ya existe un proyecto implementado por " + project.getProjectImplementer().getDescription() + " para el periodo " + project.getPeriod().getYear() + ".", Response.Status.CONFLICT.getStatusCode());
                     }
 
@@ -212,8 +209,52 @@ public class ProjectService {
         }
     }
 
+
+    public List<ProjectResumeWeb> getResumeWebByPeriodId(Long periodId) {
+        return this.projectsToProjectResumeWebs(this.getByPeriodId(periodId));
+    }
+
+    private List<ProjectResumeWeb> projectsToProjectResumeWebs(List<Project> projects) {
+        List<ProjectResumeWeb> projectResumens = new ArrayList<>();
+        for (Project project : projects) {
+            projectResumens.add(this.projectToProjectResumeWeb(project));
+        }
+        return projectResumens;
+    }
+
+    private ProjectResumeWeb projectToProjectResumeWeb(Project project) {
+        if (project == null) return null;
+
+        ProjectResumeWeb projectResumeWeb = new ProjectResumeWeb();
+        projectResumeWeb.setId(project.getId());
+        projectResumeWeb.setName(project.getName());
+        projectResumeWeb.setProgressPercentaje(null);
+        projectResumeWeb.setReportedProgress(null);
+        projectResumeWeb.setProjectImplementer(this.projectImplementerService.projectImplementerToProjectImplementerWeb(project.getProjectImplementer()));
+
+        List<Situation> situations = new ArrayList<>();
+        for (SituationAssigment situationAssigment : project.getSituationAssigments()) {
+            situations.add(situationAssigment.getSituation());
+        }
+        projectResumeWeb.setSituations(this.situationService.situationsToSituationsWeb(situations));
+
+        projectResumeWeb.setLastReportedMonth(null);
+
+        projectResumeWeb.setTarget(null);
+
+        projectResumeWeb.setReportingStartingDate(project.getReportingStartingDate());
+        projectResumeWeb.setReportingFinishingDate(project.getReportingFinishingDate());
+        projectResumeWeb.setState(project.getState());
+
+        return projectResumeWeb;
+    }
+
     private List<Project> getByPeriodId(Long periodId) {
         return this.projectDao.getByPeriodId(periodId);
+    }
+
+    private List<ProjectWeb> getWebByPeriodId(Long periodId) {
+        return this.projectsToProjectWebs(this.getByPeriodId(periodId));
     }
 
     private List<Project> getByImplementerId(Long idImplementer) {
@@ -240,6 +281,7 @@ public class ProjectService {
         }
         project.setPeriod(period);
         project.setProjectImplementer(projectImplementer);
+        project.setPeriodImplementerCode(projectWeb.getPeriodImplementerCode());
         return project;
     }
 

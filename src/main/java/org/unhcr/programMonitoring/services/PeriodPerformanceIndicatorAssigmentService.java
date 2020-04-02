@@ -1,8 +1,10 @@
 package org.unhcr.programMonitoring.services;
 
 import com.sagatechs.generics.exceptions.GeneralAppException;
+import com.sagatechs.generics.persistence.model.State;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.PeriodPerformanceIndicatorAssigmentDao;
+import org.unhcr.programMonitoring.model.IndicatorType;
 import org.unhcr.programMonitoring.model.PerformanceIndicator;
 import org.unhcr.programMonitoring.model.Period;
 import org.unhcr.programMonitoring.model.PeriodPerformanceIndicatorAssigment;
@@ -147,7 +149,8 @@ public class PeriodPerformanceIndicatorAssigmentService {
                 new PeriodPerformanceIndicatorAssigmentWeb(periodPerformanceIndicatorAssigment.getId(), periodPerformanceIndicatorAssigment.getDisaggregationType(),
                         this.performanceIndicatorService.performanceIndicatorToPerformanceIndicatorWeb(periodPerformanceIndicatorAssigment.getPerformanceIndicator()),
                         periodPerformanceIndicatorAssigment.getState(), periodPerformanceIndicatorAssigment.getMeasureType(),
-                        this.periodService.periodToPeriodWeb(periodPerformanceIndicatorAssigment.getPeriod())
+                        this.periodService.periodToPeriodWeb(periodPerformanceIndicatorAssigment.getPeriod()),
+                        periodPerformanceIndicatorAssigment.getPerformanceIndicator().getIndicatorType()
                 );
 
     }
@@ -161,5 +164,11 @@ public class PeriodPerformanceIndicatorAssigmentService {
 
     private PeriodPerformanceIndicatorAssigment getByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
         return this.periodPerformanceIndicatorAssigmentDao.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId);
+    }
+
+    public List<PeriodPerformanceIndicatorAssigmentWeb> getWebByStateAndPeriodIdandOutputIdAndIndicatorType(Long periodId, Long outputId, IndicatorType indicatorType, State state) {
+        return this.periodPerformanceIndicatorAssigmentsToPeriodPerformanceIndicatorAssigmentWebs(this.periodPerformanceIndicatorAssigmentDao.getWebByStateAndPeriodIdandOutputIdAndIndicatorType(periodId, outputId, indicatorType,state));
+
+
     }
 }

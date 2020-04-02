@@ -64,4 +64,32 @@ public class PeriodDao extends GenericDaoJpa<Period, Long> {
 
     }
 
+    public List<PeriodResumeWeb> getPeriodResumeWebByPeriodId(Long periodId) {
+        String sql = "SELECT " +
+                "       p.id as id, " +
+                "       p.state as state, " +
+                "       p.year as year " +
+                "    ,Count(pr.id) as numberOfProjects " +
+                "    ,Count(i.id) as numberOfAsignedIndicators  " +
+                "   FROM " +
+                "       program_monitoring.periods AS p  " +
+                "   LEFT OUTER JOIN " +
+                "       program_monitoring.period_performance_indicator_assigments AS i  " +
+                "           ON i.period_id = p.id and i.state ='ACTIVE'  " +
+                "   LEFT OUTER JOIN " +
+                "       program_monitoring.projects AS pr  " +
+                "           ON pr.period_id = p.id and pr.state ='ACTIVE'  " +
+                "   WHERE pr.period_id =:periodId" +
+                "   GROUP BY " +
+                "       p.id, " +
+                "       p.state, " +
+                "       p.year  " +
+                "   ORDER BY " +
+                "       p.year";
+        Query q = this.getEntityManager().createNativeQuery(sql, "periodResumeWebMapping");
+        q.setParameter("periodId", periodId);
+        return q.getResultList();
+
+    }
+
 }
