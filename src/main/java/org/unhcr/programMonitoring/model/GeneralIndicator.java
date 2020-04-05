@@ -30,14 +30,14 @@ public class GeneralIndicator extends BaseEntity<Long> {
     @Column(name = "target")
     private Integer target;
 
-    @Column(name = "total_execution", nullable = false)
+    @Column(name = "total_execution")
     private Integer totalExecution;
 
-    @Column(name = "execution_percentage", nullable = false)
+    @Column(name = "execution_percentage")
     private Integer executionPercentage;
 
     @ManyToOne(optional = true,fetch = FetchType.LAZY)
-    @JoinColumn(name = "main_general_ndicator_id",nullable = true,foreignKey = @ForeignKey(name = "fk_general_indicator_parent"))
+    @JoinColumn(name = "main_general_indicator_id",nullable = true,foreignKey = @ForeignKey(name = "fk_general_indicator_parent"))
     private GeneralIndicator mainIndicator;
 
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "mainIndicator")
