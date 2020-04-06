@@ -28,6 +28,21 @@ public class PerformanceIndicator extends BaseEntity<Long> {
     @JoinColumn(name = "output_id",foreignKey = @ForeignKey(name = "fk_performance_indicators_outputs"))
     Output output;
 
+    @Column(name = "measure_type",nullable = true)
+    @Enumerated(EnumType.STRING)
+    private MeasureType measureType;
+
+    @Column(name = "percentage_type",nullable = true)
+    @Enumerated(EnumType.STRING)
+    private PercentageType percentageType;
+
+    @OneToOne(fetch = FetchType.LAZY,optional = true)
+    @JoinColumn(name = "numerator_id",foreignKey = @ForeignKey(name = "fk_performance_indicator_indicator_numerator"))
+    private PerformanceIndicator numerator;
+
+    @OneToOne(fetch = FetchType.LAZY,optional = true)
+    @JoinColumn(name = "denominator_id",foreignKey = @ForeignKey(name = "fk_performance_indicator_indicator_denominator"))
+    private PerformanceIndicator denominator;
 
 
 
@@ -72,5 +87,37 @@ public class PerformanceIndicator extends BaseEntity<Long> {
 
     public void setIndicatorType(IndicatorType indicatorType) {
         this.indicatorType = indicatorType;
+    }
+
+    public PercentageType getPercentageType() {
+        return percentageType;
+    }
+
+    public void setPercentageType(PercentageType percentageType) {
+        this.percentageType = percentageType;
+    }
+
+    public MeasureType getMeasureType() {
+        return measureType;
+    }
+
+    public void setMeasureType(MeasureType measureType) {
+        this.measureType = measureType;
+    }
+
+    public PerformanceIndicator getNumerator() {
+        return numerator;
+    }
+
+    public void setNumerator(PerformanceIndicator numerator) {
+        this.numerator = numerator;
+    }
+
+    public PerformanceIndicator getDenominator() {
+        return denominator;
+    }
+
+    public void setDenominator(PerformanceIndicator denominator) {
+        this.denominator = denominator;
     }
 }

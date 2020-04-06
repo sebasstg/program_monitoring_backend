@@ -199,6 +199,13 @@ public class AdministrationEndpoint {
         return this.performanceIndicatorService.getAllPerformanceIndicatorWebOrderedByCode();
     }
 
+    @Path("/performanceIndicator/mains")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PerformanceIndicatorWeb> getMainPerformanceIndicators() {
+        return this.performanceIndicatorService.getMainPerformanceIndicatorWebOrderedByCode();
+    }
+
     @Path("/performanceIndicator/byPeriodAndOutputIdActives/{periodId}/{outputId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

@@ -3,6 +3,7 @@ package org.unhcr.programMonitoring.daos;
 import com.sagatechs.generics.persistence.GenericDaoJpa;
 import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.model.IndicatorType;
+import org.unhcr.programMonitoring.model.PercentageType;
 import org.unhcr.programMonitoring.model.PerformanceIndicator;
 
 import javax.ejb.Stateless;
@@ -21,6 +22,19 @@ public class PerformanceIndicatorDao extends GenericDaoJpa<PerformanceIndicator,
     public List<PerformanceIndicator> getAllOrderedByCode() {
         String sql = "select distinct o from PerformanceIndicator o order by o.description";
         Query q = this.getEntityManager().createQuery(sql, PerformanceIndicator.class);
+
+        return q.getResultList();
+
+    }
+
+
+    public List<PerformanceIndicator> getMainOrderedByCode() {
+        PercentageType percentageType = PercentageType.PERCENTAGE;
+        String sql = "select distinct o from PerformanceIndicator o " +
+                " where o.percentageType is null or  o.percentageType =:percentageType " +
+                " order by o.description";
+        Query q = this.getEntityManager().createQuery(sql, PerformanceIndicator.class);
+        q.setParameter("percentageType",percentageType);
 
         return q.getResultList();
 

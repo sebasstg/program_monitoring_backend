@@ -6,9 +6,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.PerformanceIndicatorDao;
-import org.unhcr.programMonitoring.model.IndicatorType;
-import org.unhcr.programMonitoring.model.Output;
-import org.unhcr.programMonitoring.model.PerformanceIndicator;
+import org.unhcr.programMonitoring.model.*;
 import org.unhcr.programMonitoring.webServices.model.PerformanceIndicatorWeb;
 
 import javax.ejb.Stateless;
@@ -36,8 +34,18 @@ public class PerformanceIndicatorService {
         return this.performanceIndicatorsToPerformanceIndicatorWebs(performanceIndicators);
     }
 
+    public List<PerformanceIndicatorWeb> getMainPerformanceIndicatorWebOrderedByCode() {
+
+
+        List<PerformanceIndicator> performanceIndicators = this.getMainOrderedByCode();
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(performanceIndicators);
+    }
+
     private List<PerformanceIndicator> getAllOrderedByCode() {
         return this.performanceIndicatorDao.getAllOrderedByCode();
+    }
+    private List<PerformanceIndicator> getMainOrderedByCode() {
+        return this.performanceIndicatorDao.getMainOrderedByCode();
     }
 
     public PerformanceIndicator find(Long id) {
@@ -46,7 +54,42 @@ public class PerformanceIndicatorService {
 
     public Long save(PerformanceIndicator performanceIndicator) throws GeneralAppException {
         this.validate(performanceIndicator);
-        return this.performanceIndicatorDao.save(performanceIndicator).getId();
+
+        // veo si es porcentaje
+
+        PerformanceIndicator numerator = null;
+        PerformanceIndicator denominator = null;
+        if(performanceIndicator.getPercentageType()!=null && performanceIndicator.getPercentageType().equals(PercentageType.PERCENTAGE)){
+        // el numerador
+             numerator = performanceIndicator.getNumerator();
+             denominator = performanceIndicator.getDenominator();
+
+            numerator.setMeasureType(MeasureType.INTEGER);
+            denominator.setMeasureType(MeasureType.INTEGER);
+            numerator.setNumerator(null);
+            numerator.setDenominator(null);
+            numerator.setPercentageType(PercentageType.NUMERATOR);
+            denominator.setPercentageType(PercentageType.DENOMINATOR);
+            numerator.setIndicatorType(performanceIndicator.getIndicatorType());
+            denominator.setIndicatorType(performanceIndicator.getIndicatorType());
+
+            numerator.setState(performanceIndicator.getState());
+            denominator.setState(performanceIndicator.getState());
+
+            numerator.setOutput(performanceIndicator.getOutput());
+            denominator.setOutput(performanceIndicator.getOutput());
+
+            performanceIndicator.setNumerator(numerator);
+            performanceIndicator.setDenominator(denominator);
+
+        }
+
+        if(numerator!=null) {
+            this.performanceIndicatorDao.save(numerator);
+            this.performanceIndicatorDao.save(denominator);
+        }
+        this.performanceIndicatorDao.save(performanceIndicator);
+        return  performanceIndicator.getId();
 
     }
 
@@ -60,7 +103,7 @@ public class PerformanceIndicatorService {
 
 
     public PerformanceIndicator update(PerformanceIndicator performanceIndicator) throws GeneralAppException {
-        this.validate(performanceIndicator);
+
         return this.performanceIndicatorDao.update(performanceIndicator);
     }
 
@@ -70,14 +113,49 @@ public class PerformanceIndicatorService {
             throw new GeneralAppException("No se puedo encontrar el performanceIndicator con id :" + oWeb.getId(), Response.Status.NOT_FOUND.getStatusCode());
         }
 
-        PerformanceIndicator oNew =this.performanceIndicatorWebToPerformanceIndicator(oWeb);
+        PerformanceIndicator oNew = this.performanceIndicatorWebToPerformanceIndicator(oWeb);
         oOrg.setOutput(oNew.getOutput());
         oOrg.setDescription(oNew.getDescription());
         oOrg.setState(oNew.getState());
         oOrg.setIndicatorType(oNew.getIndicatorType());
 
+
+
+        if(oNew.getPercentageType()!=null && oNew.getPercentageType().equals(PercentageType.PERCENTAGE)){
+            PerformanceIndicator numerator = null;
+            PerformanceIndicator denominator = null;
+            numerator = oOrg.getNumerator();
+            denominator = oOrg.getDenominator();
+
+            numerator.setMeasureType(MeasureType.INTEGER);
+            denominator.setMeasureType(MeasureType.INTEGER);
+            numerator.setNumerator(null);
+            numerator.setDenominator(null);
+            numerator.setPercentageType(PercentageType.NUMERATOR);
+            denominator.setPercentageType(PercentageType.DENOMINATOR);
+            numerator.setIndicatorType(oNew.getIndicatorType());
+            denominator.setIndicatorType(oNew.getIndicatorType());
+
+            numerator.setState(oNew.getState());
+            denominator.setState(oNew.getState());
+
+            numerator.setOutput(oNew.getOutput());
+            denominator.setOutput(oNew.getOutput());
+
+            numerator.setDescription(oNew.getNumerator().getDescription());
+            denominator.setDescription(oNew.getDenominator().getDescription());
+
+            oOrg.setNumerator(numerator);
+            oOrg.setDenominator(denominator);
+            LOGGER.info(numerator.getDescription());
+            LOGGER.info(denominator.getDescription());
+            this.performanceIndicatorDao.update(numerator);
+            this.performanceIndicatorDao.update(denominator);
+        }
+
+
         this.validate(oOrg);
-        this.performanceIndicatorDao.update(oOrg);
+        this.update(oOrg);
         return oOrg.getId();
 
     }
@@ -86,13 +164,26 @@ public class PerformanceIndicatorService {
     public void validate(PerformanceIndicator performanceIndicator) throws GeneralAppException {
 
         if (performanceIndicator.getOutput() == null) {
-            throw new GeneralAppException("El output es un valor requerido");
+            throw new GeneralAppException("El output es un valor requerido", Response.Status.BAD_REQUEST.getStatusCode());
         }
         if (StringUtils.isBlank(performanceIndicator.getDescription())) {
-            throw new GeneralAppException("La descripción es un valor requerido");
+            throw new GeneralAppException("La descripción es un valor requerido", Response.Status.BAD_REQUEST.getStatusCode());
         }
         if (performanceIndicator.getState() == null) {
-            throw new GeneralAppException("El estado es un valor requerido");
+            throw new GeneralAppException("El estado es un valor requerido", Response.Status.BAD_REQUEST.getStatusCode());
+        }
+
+        if (performanceIndicator.getPercentageType() != null) {
+            if (performanceIndicator.getPercentageType().equals(PercentageType.PERCENTAGE)) {
+                if (performanceIndicator.getNumerator()==null || performanceIndicator.getDenominator()==null) {
+                    throw new GeneralAppException("Los denominadores de porcentaje deben tener un numerador y un denominador", Response.Status.BAD_REQUEST.getStatusCode());
+                }
+                if (StringUtils.isBlank(performanceIndicator.getNumerator().getDescription()) || StringUtils.isBlank(performanceIndicator.getDenominator().getDescription())) {
+                    throw new GeneralAppException("Los denominadores de porcentaje deben tener un numerador y un denominador", Response.Status.BAD_REQUEST.getStatusCode());
+                }
+
+
+            }
         }
         List<PerformanceIndicator> result = new ArrayList<>(this.performanceIndicatorDao.getByDescription(performanceIndicator.getDescription()));
 
@@ -119,11 +210,25 @@ public class PerformanceIndicatorService {
     }
 
 
-   public PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
+    public PerformanceIndicatorWeb performanceIndicatorToPerformanceIndicatorWeb(PerformanceIndicator performanceIndicator) {
         if (performanceIndicator == null) {
             return null;
         } else {
-            return new PerformanceIndicatorWeb(performanceIndicator.getId(), performanceIndicator.getDescription(), performanceIndicator.getState(),  performanceIndicator.getIndicatorType(),this.outputService.outputToOutputWeb(performanceIndicator.getOutput()));
+
+            PerformanceIndicatorWeb numeratorWeb = null;
+            PerformanceIndicatorWeb denominatorWeb = null;
+            if (performanceIndicator.getPercentageType() != null && performanceIndicator.getPercentageType().equals(PercentageType.PERCENTAGE)) {
+                PerformanceIndicator enumerator = performanceIndicator.getNumerator();
+                numeratorWeb = this.performanceIndicatorToPerformanceIndicatorWeb(enumerator);
+                PerformanceIndicator denominator = performanceIndicator.getDenominator();
+                denominatorWeb = this.performanceIndicatorToPerformanceIndicatorWeb(denominator);
+            }
+
+            PerformanceIndicatorWeb r = new PerformanceIndicatorWeb(performanceIndicator.getId(), performanceIndicator.getDescription(), performanceIndicator.getState(),
+                    performanceIndicator.getIndicatorType(),
+                    this.outputService.outputToOutputWeb(performanceIndicator.getOutput()),
+                    performanceIndicator.getMeasureType(), performanceIndicator.getPercentageType(), numeratorWeb, denominatorWeb);
+            return r;
         }
     }
 
@@ -138,6 +243,9 @@ public class PerformanceIndicatorService {
     }
 
     private PerformanceIndicator performanceIndicatorWebToPerformanceIndicator(PerformanceIndicatorWeb performanceIndicatorWeb) {
+        if(performanceIndicatorWeb==null){
+            return null;
+        }
         PerformanceIndicator o = new PerformanceIndicator();
         o.setId(performanceIndicatorWeb.getId());
         o.setIndicatorType(performanceIndicatorWeb.getIndicatorType());
@@ -148,6 +256,14 @@ public class PerformanceIndicatorService {
             output = this.outputService.find(performanceIndicatorWeb.getOutputWeb().getId());
         }
         o.setOutput(output);
+        o.setMeasureType(performanceIndicatorWeb.getMeasureType());
+        o.setPercentageType(performanceIndicatorWeb.getPercentageType());
+        if (o.getMeasureType().equals(MeasureType.PERCENTAGE)) {
+            // debe haber un numerador y un denominador
+            o.setNumerator(this.performanceIndicatorWebToPerformanceIndicator(performanceIndicatorWeb.getNumerator()));
+            o.setDenominator(this.performanceIndicatorWebToPerformanceIndicator(performanceIndicatorWeb.getDenominator()));
+        }
+
         return o;
     }
 
@@ -162,17 +278,17 @@ public class PerformanceIndicatorService {
 
     public List<PerformanceIndicatorWeb> getWebsByStateAndPeriodIdandOutputId(Long periodId, State state, Long outputId) {
 
-        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputId(periodId,state,outputId));
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputId(periodId, state, outputId));
     }
 
     public List<PerformanceIndicatorWeb> getWebByStateAndPeriodIdandOutputIdAndIndicatorType(Long periodId, State state, Long outputId, IndicatorType indicatorType) {
 
-        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputIdAndIndicatorType(periodId,state,outputId, indicatorType));
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByStateAndPeriodIdandOutputIdAndIndicatorType(periodId, state, outputId, indicatorType));
     }
 
     public List<PerformanceIndicatorWeb> getWebsByIndicatorType(IndicatorType indicatorType, State state) {
 
-        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByIndicatorType(indicatorType,state));
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByIndicatorType(indicatorType, state));
     }
 
     private List<PerformanceIndicator> getByIndicatorType(IndicatorType indicatorType, State state) {
@@ -184,14 +300,14 @@ public class PerformanceIndicatorService {
     }
 
     private List<PerformanceIndicator> getByStateAndPeriodIdandOutputIdAndIndicatorType(Long periodoId, State state, Long outputId, IndicatorType indicatorType) {
-        return this.performanceIndicatorDao.getByStateAndPeriodIdandOutputIdAndIndicatorType(periodoId, state, outputId,indicatorType);
+        return this.performanceIndicatorDao.getByStateAndPeriodIdandOutputIdAndIndicatorType(periodoId, state, outputId, indicatorType);
     }
 
     public List<PerformanceIndicatorWeb> getWebByOutputIdAndType(Long id, IndicatorType type) {
-        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByOutputIdAndType(id,type));
+        return this.performanceIndicatorsToPerformanceIndicatorWebs(this.getByOutputIdAndType(id, type));
     }
 
     private List<PerformanceIndicator> getByOutputIdAndType(Long id, IndicatorType type) {
-        return this.performanceIndicatorDao.getByOutputIdAndType(id,type);
+        return this.performanceIndicatorDao.getByOutputIdAndType(id, type);
     }
 }

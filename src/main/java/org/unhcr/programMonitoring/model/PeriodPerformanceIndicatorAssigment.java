@@ -34,6 +34,14 @@ public class PeriodPerformanceIndicatorAssigment extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private MeasureType measureType;
 
+    @Column(name = "percentage_type",nullable = true)
+    @Enumerated(EnumType.STRING)
+    private PercentageType percentageType;
+
+    @ManyToOne(fetch = FetchType.LAZY,optional = true)
+    @JoinColumn(name = "period_performance_indicator_assigment_id",foreignKey = @ForeignKey(name = "fk_period_performance_indicator_assigment_indicator"))
+    private PeriodPerformanceIndicatorAssigment periodPerformanceIndicatorAssigment;
+
 
     @Override
     public Long getId() {
@@ -82,5 +90,21 @@ public class PeriodPerformanceIndicatorAssigment extends BaseEntity<Long> {
 
     public void setMeasureType(MeasureType measureType) {
         this.measureType = measureType;
+    }
+
+    public PercentageType getPercentageType() {
+        return percentageType;
+    }
+
+    public void setPercentageType(PercentageType percentageType) {
+        this.percentageType = percentageType;
+    }
+
+    public PeriodPerformanceIndicatorAssigment getPeriodPerformanceIndicatorAssigment() {
+        return periodPerformanceIndicatorAssigment;
+    }
+
+    public void setPeriodPerformanceIndicatorAssigment(PeriodPerformanceIndicatorAssigment periodPerformanceIndicatorAssigment) {
+        this.periodPerformanceIndicatorAssigment = periodPerformanceIndicatorAssigment;
     }
 }

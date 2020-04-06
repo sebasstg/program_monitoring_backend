@@ -1,14 +1,14 @@
 package org.unhcr.programMonitoring.model;
 
-public enum MeasureType {
-	INTEGER("NÚMEROS ENTEROS"),
-	YES_NO("SI_NO"),
+public enum PercentageType {
+	NUMERATOR("NUMERADOR"),
+	DENOMINATOR("DENOMINADOR"),
 	PERCENTAGE("PORCENTAJE");
 
 
 	private String label;
 
-	private MeasureType(String label) {
+	private PercentageType(String label) {
 		this.label = label;
 	}
 
