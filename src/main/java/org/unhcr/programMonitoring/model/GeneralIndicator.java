@@ -27,6 +27,10 @@ public class GeneralIndicator extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private DisaggregationType disaggregationType;
 
+    @Column(name = "measure_type", nullable = true)
+    @Enumerated(EnumType.STRING)
+    private MeasureType measureType;
+
     @Column(name = "target")
     private Integer target;
 
@@ -139,5 +143,13 @@ public class GeneralIndicator extends BaseEntity<Long> {
 
     public void setPeriod(Period period) {
         this.period = period;
+    }
+
+    public MeasureType getMeasureType() {
+        return measureType;
+    }
+
+    public void setMeasureType(MeasureType measureType) {
+        this.measureType = measureType;
     }
 }

@@ -69,6 +69,10 @@ public class IndicatorExecution extends BaseEntity<Long> {
     @Enumerated(EnumType.STRING)
     private MeasureType measureType;
 
+    @OneToMany(mappedBy = "indicatorExecution",fetch = FetchType.LAZY)
+    private Set<Quarter> quarters = new HashSet<>();
+
+
     @Override
     public Long getId() {
         return id;
@@ -196,5 +200,33 @@ public class IndicatorExecution extends BaseEntity<Long> {
 
     public void setMeasureType(MeasureType measureType) {
         this.measureType = measureType;
+    }
+
+    public Set<Quarter> getQuarters() {
+        return quarters;
+    }
+
+    public void setQuarters(Set<Quarter> quarters) {
+        this.quarters = quarters;
+    }
+
+    public void addQuarter(Quarter quarter){
+        if(!this.quarters.add(quarter)){
+            this.quarters.remove(quarter);
+            this.quarters.add(quarter);
+        }
+    }
+
+    public void addPerformanceIndicatorExecutionLocationAssigments(IndicatorExecutionLocationAssigment assigment){
+        assigment.setIndicatorExecution(this);
+        if(!this.performanceIndicatorExecutionLocationAssigments.add(assigment)){
+            this.performanceIndicatorExecutionLocationAssigments.remove(assigment);
+            this.performanceIndicatorExecutionLocationAssigments.add(assigment);
+        }
+    }
+
+    public void addIndicatorValue(IndicatorValue indicatorValue){
+        indicatorValue.setIndicatorExecution(this);
+
     }
 }

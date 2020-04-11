@@ -1,13 +1,8 @@
 package org.unhcr.programMonitoring.webServices.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sagatechs.generics.persistence.model.State;
-import com.sagatechs.generics.webservice.jsonSerializers.LocalDateDeserializer;
-import com.sagatechs.generics.webservice.jsonSerializers.LocalDateSerializer;
 
-import java.time.LocalDate;
 import java.util.List;
 
 
@@ -16,28 +11,22 @@ public class ProjectWeb {
     public ProjectWeb() {
     }
 
-    public ProjectWeb(Long id, String periodImplementerCode, String name, LocalDate reportingStartingDate, LocalDate reportingFinishingDate, State state, PeriodWeb periodWeb, ProjectImplementerWeb projectImplementerWeb) {
+    public ProjectWeb(Long id, String code, String name,  State state, PeriodWeb periodWeb, ProjectImplementerWeb projectImplementerWeb) {
         this.id = id;
         this.name = name;
-        this.reportingStartingDate = reportingStartingDate;
-        this.reportingFinishingDate = reportingFinishingDate;
-        this.state = state;
+         this.state = state;
         this.periodWeb = periodWeb;
         this.projectImplementerWeb = projectImplementerWeb;
-        this.periodImplementerCode=periodImplementerCode;
+        this.code=code;
     }
 
     private Long id;
 
+
+    private String code;
+
     private String name;
 
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate reportingStartingDate;
-
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate reportingFinishingDate;
 
     private State state;
 
@@ -50,7 +39,7 @@ public class ProjectWeb {
     @JsonProperty("situations")
     private List<SituationWeb> situationWeb;
 
-    private String periodImplementerCode;
+    private List<ProjectLocationWeb> projectLocations;
 
     public Long getId() {
         return id;
@@ -68,21 +57,6 @@ public class ProjectWeb {
         this.name = name;
     }
 
-    public LocalDate getReportingStartingDate() {
-        return reportingStartingDate;
-    }
-
-    public void setReportingStartingDate(LocalDate reportingStartingDate) {
-        this.reportingStartingDate = reportingStartingDate;
-    }
-
-    public LocalDate getReportingFinishingDate() {
-        return reportingFinishingDate;
-    }
-
-    public void setReportingFinishingDate(LocalDate reportingFinishingDate) {
-        this.reportingFinishingDate = reportingFinishingDate;
-    }
 
     public State getState() {
         return state;
@@ -116,11 +90,20 @@ public class ProjectWeb {
         this.situationWeb = situationWeb;
     }
 
-    public String getPeriodImplementerCode() {
-        return periodImplementerCode;
+
+    public String getCode() {
+        return code;
     }
 
-    public void setPeriodImplementerCode(String periodImplementerCode) {
-        this.periodImplementerCode = periodImplementerCode;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public List<ProjectLocationWeb> getProjectLocations() {
+        return projectLocations;
+    }
+
+    public void setProjectLocations(List<ProjectLocationWeb> projectLocations) {
+        this.projectLocations = projectLocations;
     }
 }

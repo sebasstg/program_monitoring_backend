@@ -1,13 +1,28 @@
 package org.unhcr.programMonitoring.model;
 
 import com.sagatechs.generics.persistence.model.BaseEntity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(schema = "program_monitoring", name = "indicator_values")
+@Table(schema = "program_monitoring", name = "indicator_values",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"month", "gender","age_group","canton_id", "indicator_execution_id"})
+)
 public class IndicatorValue extends BaseEntity<Long> {
+    public IndicatorValue() {
+    }
+
+    public IndicatorValue(Month month, Gender gender, AgeGroup ageGroup, Canton location, BigDecimal value, Quarter quarter) {
+        this.month = month;
+        this.gender = gender;
+        this.ageGroup = ageGroup;
+        this.location = location;
+        this.value = value;
+        this.quarter = quarter;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +51,10 @@ public class IndicatorValue extends BaseEntity<Long> {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "indicator_execution_id", foreignKey = @ForeignKey(name = "fk_performance_indicator_execution_value"))
     private IndicatorExecution indicatorExecution;
+
+    @ManyToOne(fetch = FetchType.LAZY,optional = false)
+    @JoinColumn(name = "quarter_id",foreignKey = @ForeignKey(name = "fk_indicator_value_quarter"))
+    private Quarter quarter;
 
     @Override
     public Long getId() {
@@ -92,5 +111,49 @@ public class IndicatorValue extends BaseEntity<Long> {
 
     public void setIndicatorExecution(IndicatorExecution indicatorExecution) {
         this.indicatorExecution = indicatorExecution;
+    }
+
+    public Quarter getQuarter() {
+        return quarter;
+    }
+
+    public void setQuarter(Quarter quarter) {
+        this.quarter = quarter;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        IndicatorValue that = (IndicatorValue) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+                .append(id, that.id)
+                .append(month, that.month)
+                .append(gender, that.gender)
+                .append(ageGroup, that.ageGroup)
+                .append(location, that.location)
+                .append(value, that.value)
+                .append(indicatorExecution, that.indicatorExecution)
+                .append(quarter, that.quarter)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .appendSuper(super.hashCode())
+                .append(id)
+                .append(month)
+                .append(gender)
+                .append(ageGroup)
+                .append(location)
+                .append(value)
+                .append(indicatorExecution)
+                .append(quarter)
+                .toHashCode();
     }
 }

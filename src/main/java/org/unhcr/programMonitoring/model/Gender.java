@@ -1,13 +1,17 @@
 package org.unhcr.programMonitoring.model;
 
 public enum Gender {
-	MALE("MASCULINO"),
-	FEMALE("FEMENINO");
+	MALE("MASCULINO",1),
+	FEMALE("FEMENINO",2);
 
 	private String label;
 
-	private Gender(String label) {
+	private int order;
+
+
+	Gender(String label, int order) {
 		this.label = label;
+		this.order = order;
 	}
 
 	public String getLabel() {
@@ -18,4 +22,11 @@ public enum Gender {
 		this.label = label;
 	}
 
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
 }

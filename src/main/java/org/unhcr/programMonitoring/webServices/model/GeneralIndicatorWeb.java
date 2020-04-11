@@ -2,6 +2,7 @@ package org.unhcr.programMonitoring.webServices.model;
 
 import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.model.DisaggregationType;
+import org.unhcr.programMonitoring.model.MeasureType;
 
 public class GeneralIndicatorWeb {
 
@@ -10,7 +11,7 @@ public class GeneralIndicatorWeb {
 
     public GeneralIndicatorWeb(Long id, Boolean parent, String description, DisaggregationType disaggregationType, Integer target,
                                Integer totalExecution, Integer executionPercentage,
-                               State state, PeriodWeb period) {
+                               State state, PeriodWeb period, MeasureType measureType) {
         this.id = id;
         this.parent = parent;
         this.description = description;
@@ -20,6 +21,7 @@ public class GeneralIndicatorWeb {
         this.executionPercentage = executionPercentage;
         this.state = state;
         this.period = period;
+        this.measureType = measureType;
     }
 
     private Long id;
@@ -29,6 +31,7 @@ public class GeneralIndicatorWeb {
     private String description;
 
     private DisaggregationType disaggregationType;
+    private MeasureType measureType;
     private Integer target;
     private Integer totalExecution;
     private Integer executionPercentage;
@@ -107,5 +110,13 @@ public class GeneralIndicatorWeb {
 
     public void setPeriod(PeriodWeb period) {
         this.period = period;
+    }
+
+    public MeasureType getMeasureType() {
+        return measureType;
+    }
+
+    public void setMeasureType(MeasureType measureType) {
+        this.measureType = measureType;
     }
 }

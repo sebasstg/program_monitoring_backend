@@ -18,20 +18,14 @@ public class Project extends BaseEntity<Long> {
     private Long id;
 
 
-    @Column(name = "period_implementer_code")
-    private String periodImplementerCode;
+    @Column(name = "code")
+    private String code;
 
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "reporting_starting_date", nullable = false)
-    private LocalDate reportingStartingDate;
-
-    @Column(name = "reporting_finishing_date", nullable = false)
-    private LocalDate reportingFinishingDate;
-
-    @Column(name = "state",  nullable = false)
+    @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
 
@@ -46,8 +40,15 @@ public class Project extends BaseEntity<Long> {
     @JoinColumn(name = "project_implementor_id", foreignKey = @ForeignKey(name = "fk_projects_project_implementor"))
     private ProjectImplementer projectImplementer;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "project")
-    private Set<IndicatorExecution> indicatorExecutions;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
+    private Set<IndicatorExecution> indicatorExecutions = new HashSet<>();
+    ;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
+    private Set<ProjectLocationAssigment> projectLocationAssigments = new HashSet<>();
+
+
 
     @Override
 
@@ -67,22 +68,6 @@ public class Project extends BaseEntity<Long> {
         this.name = name;
     }
 
-    public LocalDate getReportingStartingDate() {
-        return reportingStartingDate;
-    }
-
-    public void setReportingStartingDate(LocalDate reportingStartingDate) {
-        this.reportingStartingDate = reportingStartingDate;
-    }
-
-    public LocalDate getReportingFinishingDate() {
-        return reportingFinishingDate;
-    }
-
-    public void setReportingFinishingDate(LocalDate reportingFinishingDate) {
-        this.reportingFinishingDate = reportingFinishingDate;
-    }
-
     public Period getPeriod() {
         return period;
     }
@@ -99,10 +84,10 @@ public class Project extends BaseEntity<Long> {
         this.situationAssigments = situationAssigments;
     }
 
-    public void addSituationAssigment(SituationAssigment situationAssigment){
+    public void addSituationAssigment(SituationAssigment situationAssigment) {
 
         situationAssigment.setProject(this);
-        if(this.situationAssigments.add(situationAssigment)){
+        if (this.situationAssigments.add(situationAssigment)) {
             this.situationAssigments.remove(situationAssigment);
             this.situationAssigments.add(situationAssigment);
         }
@@ -132,11 +117,36 @@ public class Project extends BaseEntity<Long> {
         this.state = state;
     }
 
-    public String getPeriodImplementerCode() {
-        return periodImplementerCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setPeriodImplementerCode(String periodImplementerCode) {
-        this.periodImplementerCode = periodImplementerCode;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Set<ProjectLocationAssigment> getProjectLocationAssigments() {
+        return projectLocationAssigments;
+    }
+
+    public void setProjectLocationAssigments(Set<ProjectLocationAssigment> projectLocationAssigments) {
+        this.projectLocationAssigments = projectLocationAssigments;
+    }
+
+    public void addProjectLocationAssigment(ProjectLocationAssigment projectLocationAssigment) {
+        projectLocationAssigment.setProject(this);
+        if (!this.projectLocationAssigments.add(projectLocationAssigment)) {
+            this.projectLocationAssigments.remove(projectLocationAssigment);
+            this.projectLocationAssigments.add(projectLocationAssigment);
+        }
+    }
+
+    public void addIndicatorExecution(IndicatorExecution indicatorExecution) {
+        indicatorExecution.setProject(this);
+        if (!this.indicatorExecutions.add(indicatorExecution)) {
+            this.indicatorExecutions.remove(indicatorExecution);
+            this.indicatorExecutions.add(indicatorExecution);
+        }
+
     }
 }

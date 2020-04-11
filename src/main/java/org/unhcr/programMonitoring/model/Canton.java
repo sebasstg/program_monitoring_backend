@@ -2,6 +2,8 @@ package org.unhcr.programMonitoring.model;
 
 import com.sagatechs.generics.persistence.model.BaseEntity;
 import com.sagatechs.generics.persistence.model.State;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -68,5 +70,33 @@ public class Canton extends BaseEntity<Long> {
 
     public void setProvincia(Provincia provincia) {
         this.provincia = provincia;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Canton canton = (Canton) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+                .append(id, canton.id)
+                .append(code, canton.code)
+                .append(description, canton.description)
+                .append(state, canton.state)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .appendSuper(super.hashCode())
+                .append(id)
+                .append(code)
+                .append(description)
+                .append(state)
+                .toHashCode();
     }
 }

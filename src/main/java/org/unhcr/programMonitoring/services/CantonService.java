@@ -43,4 +43,7 @@ public class CantonService {
 
     }
 
+    public Canton find(Long id) {
+        return this.cantonDao.find(id);
+    }
 }

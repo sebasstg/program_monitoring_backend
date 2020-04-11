@@ -1,14 +1,8 @@
 package org.unhcr.programMonitoring.webServices.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.sagatechs.generics.persistence.model.State;
-import com.sagatechs.generics.webservice.jsonSerializers.LocalDateDeserializer;
-import com.sagatechs.generics.webservice.jsonSerializers.LocalDateSerializer;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 
@@ -24,6 +18,7 @@ public class ProjectResumeWeb {
 
     private ProjectImplementerWeb projectImplementer;
 
+    private String code;
     private String name;
 
     private BigDecimal progressPercentaje;
@@ -36,15 +31,23 @@ public class ProjectResumeWeb {
 
     private Integer target;
 
-    @JsonSerialize(using = LocalDateSerializer.class)
+   /* @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate reportingStartingDate;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate reportingFinishingDate;
+    private LocalDate reportingFinishingDate;*/
 
     private State state;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public Long getId() {
         return id;
@@ -110,21 +113,7 @@ public class ProjectResumeWeb {
         this.target = target;
     }
 
-    public LocalDate getReportingStartingDate() {
-        return reportingStartingDate;
-    }
 
-    public void setReportingStartingDate(LocalDate reportingStartingDate) {
-        this.reportingStartingDate = reportingStartingDate;
-    }
-
-    public LocalDate getReportingFinishingDate() {
-        return reportingFinishingDate;
-    }
-
-    public void setReportingFinishingDate(LocalDate reportingFinishingDate) {
-        this.reportingFinishingDate = reportingFinishingDate;
-    }
 
     public State getState() {
         return state;

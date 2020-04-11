@@ -86,6 +86,10 @@ public class GeneralIndicatorService {
         if (generalIndicatorWeb.getDisaggregationType() == null) {
             throw new GeneralAppException("El tipo de desagregación es obligatorio", Response.Status.BAD_REQUEST.getStatusCode());
         }
+
+        if (generalIndicatorWeb.getMeasureType() == null) {
+            throw new GeneralAppException("El tipo de medida es obligatorio", Response.Status.BAD_REQUEST.getStatusCode());
+        }
        /* if (generalIndicatorWeb.getTarget() == null) {
             throw new GeneralAppException("La meta del indicador es obligatorio", Response.Status.BAD_REQUEST.getStatusCode());
         }
@@ -144,6 +148,7 @@ public class GeneralIndicatorService {
         generalIndicator.setTotalExecution(generalIndicatorWeb.getTotalExecution());
         generalIndicator.setExecutionPercentage(generalIndicatorWeb.getExecutionPercentage());
         generalIndicator.setState(generalIndicatorWeb.getState());
+        generalIndicator.setMeasureType(generalIndicatorWeb.getMeasureType());
         Period period = null;
         if (generalIndicatorWeb.getPeriod() != null) {
             period = this.periodService.getById(generalIndicatorWeb.getPeriod().getId());
@@ -171,7 +176,7 @@ public class GeneralIndicatorService {
         return new GeneralIndicatorWeb(
                 generalIndicator.getId(), generalIndicator.getParent(), generalIndicator.getDescription(), generalIndicator.getDisaggregationType(),
                 generalIndicator.getTarget(), generalIndicator.getTotalExecution(), generalIndicator.getExecutionPercentage(),
-                generalIndicator.getState(), periodWeb);
+                generalIndicator.getState(), periodWeb, generalIndicator.getMeasureType());
     }
 
 

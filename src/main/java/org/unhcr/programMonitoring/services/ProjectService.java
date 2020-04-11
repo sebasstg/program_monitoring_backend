@@ -13,13 +13,14 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 @Stateless
 public class ProjectService {
 
+    @SuppressWarnings("unused")
     private static final Logger LOGGER = Logger.getLogger(ProjectService.class);
 
     @Inject
@@ -36,6 +37,10 @@ public class ProjectService {
 
     @Inject
     SituationService situationService;
+
+    @Inject
+    ProjectLocationAssigmentService projectLocationAssigmentService;
+
 
 
     public ProjectWeb getWebById(Long id) {
@@ -65,9 +70,12 @@ public class ProjectService {
             // las situaciones
             Set<SituationAssigment> situacions = project.getSituationAssigments();
 
-            ProjectWeb projectWeb = new ProjectWeb(project.getId(), project.getPeriodImplementerCode(), project.getName(), project.getReportingStartingDate(), project.getReportingFinishingDate(), project.getState(), periodWeb, projectImplentorWeb);
+            ProjectWeb projectWeb = new ProjectWeb(project.getId(), project.getCode(), project.getName(), project.getState(), periodWeb, projectImplentorWeb);
             List<SituationWeb> situacionsWeb = this.situationAssigmentsToSituationsWeb(new ArrayList<>(situacions));
             projectWeb.setSituationWeb(situacionsWeb);
+
+            projectWeb.setProjectLocations(this.projectLocationAssigmentService.getWebByProjectId(project.getId()));
+
             return projectWeb;
         }
     }
@@ -92,6 +100,10 @@ public class ProjectService {
 
         for (SituationAssigment situationAssigment : project.getSituationAssigments()) {
             this.situationAssigmentDao.save(situationAssigment);
+        }
+
+        if(CollectionUtils.isNotEmpty(projectWeb.getProjectLocations())){
+            this.projectLocationAssigmentService.saveOrUpdate(projectWeb.getProjectLocations(),project);
         }
         return project.getId();
     }
@@ -163,10 +175,15 @@ public class ProjectService {
         Project project = this.projectDao.find(projectWeb.getId());//this.projectWebToProject(projectWeb);
         project.setState(projectWeb.getState());
         project.setName(projectWeb.getName());
-        project.setReportingStartingDate(projectWeb.getReportingStartingDate());
-        project.setReportingFinishingDate(projectWeb.getReportingFinishingDate());
-        project.setPeriodImplementerCode(projectWeb.getPeriodImplementerCode());
+        project.setCode(projectWeb.getCode());
+
+
         this.projectDao.update(project);
+
+
+        if(CollectionUtils.isNotEmpty(projectWeb.getProjectLocations())){
+            this.projectLocationAssigmentService.saveOrUpdate(projectWeb.getProjectLocations(),project);
+        }
         return project.getId();
     }
 
@@ -178,18 +195,12 @@ public class ProjectService {
                 throw new GeneralAppException("El año es un dato obligatorio en el proyecto", Response.Status.BAD_REQUEST.getStatusCode());
             }
             if (projectWeb.getPeriodWeb() == null) {
-                throw new GeneralAppException("El estado es un dato obligatorio en el proyecto", Response.Status.BAD_REQUEST.getStatusCode());
+                throw new GeneralAppException("El periodo es un dato obligatorio en el proyecto", Response.Status.BAD_REQUEST.getStatusCode());
             }
             if (projectWeb.getProjectImplementerWeb() == null) {
                 throw new GeneralAppException("El socio implementador es un dato obligatorio en el proyecto", Response.Status.BAD_REQUEST.getStatusCode());
             }
-            if (projectWeb.getReportingStartingDate() == null) {
-                throw new GeneralAppException("La fecha de inicio de reportes es un dato obligatorio en el proyecto", Response.Status.BAD_REQUEST.getStatusCode());
-            }
 
-            if (projectWeb.getReportingFinishingDate() == null) {
-                throw new GeneralAppException("La fecha de fin de reportes es un dato obligatorio en el proyecto", Response.Status.BAD_REQUEST.getStatusCode());
-            }
 
             // compruebo q no haya 2 para el mismo año para el mismo implementador y con el mismo nombre
 
@@ -205,6 +216,9 @@ public class ProjectService {
                     }
 
                 }
+
+
+
             }
         }
     }
@@ -242,8 +256,6 @@ public class ProjectService {
 
         projectResumeWeb.setTarget(null);
 
-        projectResumeWeb.setReportingStartingDate(project.getReportingStartingDate());
-        projectResumeWeb.setReportingFinishingDate(project.getReportingFinishingDate());
         projectResumeWeb.setState(project.getState());
 
         return projectResumeWeb;
@@ -269,19 +281,17 @@ public class ProjectService {
         project.setId(projectWeb.getId());
         project.setName(projectWeb.getName());
         project.setState(projectWeb.getState());
-        project.setReportingFinishingDate(projectWeb.getReportingFinishingDate());
-        project.setReportingStartingDate(projectWeb.getReportingFinishingDate());
         ProjectImplementer projectImplementer = null;
         if (projectWeb.getProjectImplementerWeb() != null && projectWeb.getProjectImplementerWeb().getId() != null) {
-            projectImplementer = this.projectImplementerService.find(1l);
+            projectImplementer = this.projectImplementerService.find(projectWeb.getProjectImplementerWeb().getId());
         }
         Period period = null;
         if (projectWeb.getPeriodWeb() != null && projectWeb.getPeriodWeb().getId() != null) {
-            period = this.periodService.find(1l);
+            period = this.periodService.find(projectWeb.getPeriodWeb().getId());
         }
         project.setPeriod(period);
         project.setProjectImplementer(projectImplementer);
-        project.setPeriodImplementerCode(projectWeb.getPeriodImplementerCode());
+        project.setCode(projectWeb.getCode());
         return project;
     }
 
@@ -293,5 +303,13 @@ public class ProjectService {
     public List<ProjectWeb> getWebByState(State active) {
 
         return this.projectsToProjectWebs(this.projectDao.getByState(State.ACTIVE));
+    }
+
+    protected Project saveOrUpdate(Project project) {
+        if (project.getId() == null) {
+            return this.projectDao.save(project);
+        } else {
+            return this.projectDao.update(project);
+        }
     }
 }
