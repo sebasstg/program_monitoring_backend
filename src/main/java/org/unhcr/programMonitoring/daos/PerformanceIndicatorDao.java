@@ -7,6 +7,7 @@ import org.unhcr.programMonitoring.model.PercentageType;
 import org.unhcr.programMonitoring.model.PerformanceIndicator;
 
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -104,4 +105,5 @@ public class PerformanceIndicatorDao extends GenericDaoJpa<PerformanceIndicator,
                 .setParameter("type",type);
         return q.getResultList();
     }
+
 }

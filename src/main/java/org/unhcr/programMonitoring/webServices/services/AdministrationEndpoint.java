@@ -58,6 +58,9 @@ public class AdministrationEndpoint {
     @Inject
     GeneralIndicatorService generalIndicatorService;
 
+    @Inject
+    IndicatorExecutionService indicatorExecutionService;
+
 
     @Path("/rightGroup")
     @GET
@@ -542,4 +545,39 @@ public class AdministrationEndpoint {
         return this.generalIndicatorService.update(generalIndicatorWeb);
     }
 
+    /**
+     * General Indicator
+     * @return
+     */
+
+
+    @Path("/indicatorExecution/performanceByProjectId/{projectId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<IndicatorExecutionWeb> getIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) {
+        return this.indicatorExecutionService.getPerformanceIndicatorByProjectId(projectId);
+    }
+
+    @Path("/indicatorExecution/mainGeneralByProjectId/{projectId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<IndicatorExecutionWeb> getMainGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) {
+        return this.indicatorExecutionService.getPerformanceIndicatorByProjectId(projectId);
+    }
+
+    @Path("/indicatorExecution/performance")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long createIndicatorExecution(IndicatorExecutionWeb indicatorExecutionWeb) throws GeneralAppException {
+        return this.indicatorExecutionService.createIndicatorExecution(indicatorExecutionWeb);
+    }
+
+
+
+    @Path("/indicatorExecution/performance")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updateIndicatorExecution(IndicatorExecutionWeb indicatorExecutionWeb) throws GeneralAppException {
+        return this.indicatorExecutionService.updateIndicatorExecution(indicatorExecutionWeb);
+    }
 }

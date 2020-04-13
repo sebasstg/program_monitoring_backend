@@ -5,20 +5,27 @@ import org.unhcr.programMonitoring.model.DisaggregationType;
 import org.unhcr.programMonitoring.model.IndicatorType;
 import org.unhcr.programMonitoring.model.MeasureType;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class IndicatorExecutionWeb {
-    public IndicatorExecutionWeb(Long id, String attachmentDescription, ProjectWeb project,
-                                 PerformanceIndicatorWeb performanceIndicator, OutputWeb output, State state,
-                                 DisaggregationType disaggregationType,
-                                 Integer target, Integer totalExecution, Integer executionPercentage, IndicatorType indicatorType,
-                                 List<IndicatorExecutionLocationAssigmentWeb> indicatorExecutionLocationAssigment, SituationWeb situation, MeasureType measureType) {
+
+    public IndicatorExecutionWeb() {
+    }
+
+    public IndicatorExecutionWeb(Long id, String attachmentDescription,
+                                 ProjectWeb project, PerformanceIndicatorWeb performanceIndicator,
+                                 OutputWeb output, GeneralIndicatorWeb generalIndicator,
+                                 State state, DisaggregationType disaggregationType,
+                                 Integer target, Integer totalExecution,
+                                 Integer executionPercentage, IndicatorType indicatorType,
+                                 List<IndicatorExecutionLocationAssigmentWeb> indicatorExecutionLocationAssigment, SituationWeb situation, MeasureType measureType, List<QuarterWeb> quarterWebs) {
         this.id = id;
         this.attachmentDescription = attachmentDescription;
         this.project = project;
         this.performanceIndicator = performanceIndicator;
         this.output = output;
+        this.generalIndicator = generalIndicator;
         this.state = state;
         this.disaggregationType = disaggregationType;
         this.target = target;
@@ -28,6 +35,7 @@ public class IndicatorExecutionWeb {
         this.indicatorExecutionLocationAssigment = indicatorExecutionLocationAssigment;
         this.situation = situation;
         this.measureType = measureType;
+        this.quarters=quarterWebs;
     }
 
     private Long id;
@@ -35,6 +43,7 @@ public class IndicatorExecutionWeb {
     private ProjectWeb project;
     private PerformanceIndicatorWeb performanceIndicator;
     private OutputWeb output;
+    private GeneralIndicatorWeb generalIndicator;
     private State state;
     private DisaggregationType disaggregationType;
     private Integer target;
@@ -44,6 +53,8 @@ public class IndicatorExecutionWeb {
     private List<IndicatorExecutionLocationAssigmentWeb> indicatorExecutionLocationAssigment;
     private SituationWeb situation;
     private MeasureType measureType;
+    private List<QuarterWeb> quarters = new ArrayList<>();
+
 
     public Long getId() {
         return id;
@@ -155,5 +166,21 @@ public class IndicatorExecutionWeb {
 
     public void setMeasureType(MeasureType measureType) {
         this.measureType = measureType;
+    }
+
+    public GeneralIndicatorWeb getGeneralIndicator() {
+        return generalIndicator;
+    }
+
+    public void setGeneralIndicator(GeneralIndicatorWeb generalIndicator) {
+        this.generalIndicator = generalIndicator;
+    }
+
+    public List<QuarterWeb> getQuarters() {
+        return quarters;
+    }
+
+    public void setQuarters(List<QuarterWeb> quarters) {
+        this.quarters = quarters;
     }
 }

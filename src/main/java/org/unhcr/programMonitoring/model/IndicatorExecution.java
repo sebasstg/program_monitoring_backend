@@ -34,6 +34,9 @@ public class IndicatorExecution extends BaseEntity<Long> {
     @JoinColumn(name = "general_indicator_id",foreignKey = @ForeignKey(name = "fk_indicator_execution_general_indicator"))
     private GeneralIndicator generalIndicator;
 
+    @Column(name = "main_general_indicator", nullable = true)
+    private Boolean mainGeneralIndicator;
+
     @Column(name = "state", nullable = false)
     @Enumerated(EnumType.STRING)
     private State state;
@@ -211,6 +214,7 @@ public class IndicatorExecution extends BaseEntity<Long> {
     }
 
     public void addQuarter(Quarter quarter){
+        quarter.setIndicatorExecution(this);
         if(!this.quarters.add(quarter)){
             this.quarters.remove(quarter);
             this.quarters.add(quarter);
@@ -228,5 +232,13 @@ public class IndicatorExecution extends BaseEntity<Long> {
     public void addIndicatorValue(IndicatorValue indicatorValue){
         indicatorValue.setIndicatorExecution(this);
 
+    }
+
+    public Boolean getMainGeneralIndicator() {
+        return mainGeneralIndicator;
+    }
+
+    public void setMainGeneralIndicator(Boolean mainGeneralIndicator) {
+        this.mainGeneralIndicator = mainGeneralIndicator;
     }
 }

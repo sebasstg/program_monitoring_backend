@@ -18,7 +18,7 @@ public class IndicatorValueService {
     @Inject
     IndicatorValueDao indicatorValueDao;
 
-    protected IndicatorValue saveOrUpdate(IndicatorValue indicatorValue){
+    public IndicatorValue saveOrUpdate(IndicatorValue indicatorValue){
         if(indicatorValue.getId()==null){
             return this.indicatorValueDao.save(indicatorValue);
         }else{

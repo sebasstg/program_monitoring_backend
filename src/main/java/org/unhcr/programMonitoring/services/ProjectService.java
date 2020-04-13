@@ -27,6 +27,9 @@ public class ProjectService {
     ProjectDao projectDao;
 
     @Inject
+    IndicatorExecutionService indicatorExecutionService;
+
+    @Inject
     SituationAssigmentDao situationAssigmentDao;
 
     @Inject
@@ -40,7 +43,6 @@ public class ProjectService {
 
     @Inject
     ProjectLocationAssigmentService projectLocationAssigmentService;
-
 
 
     public ProjectWeb getWebById(Long id) {
@@ -70,12 +72,12 @@ public class ProjectService {
             // las situaciones
             Set<SituationAssigment> situacions = project.getSituationAssigments();
 
-            ProjectWeb projectWeb = new ProjectWeb(project.getId(), project.getCode(), project.getName(), project.getState(), periodWeb, projectImplentorWeb);
+            ProjectWeb projectWeb = new ProjectWeb(project.getId(), project.getCode(), project.getName(), project.getState(), periodWeb, projectImplentorWeb, project.getTarget());
             List<SituationWeb> situacionsWeb = this.situationAssigmentsToSituationsWeb(new ArrayList<>(situacions));
             projectWeb.setSituationWeb(situacionsWeb);
 
             projectWeb.setProjectLocations(this.projectLocationAssigmentService.getWebByProjectId(project.getId()));
-
+            projectWeb.setTarget(project.getTarget());
             return projectWeb;
         }
     }
@@ -102,9 +104,15 @@ public class ProjectService {
             this.situationAssigmentDao.save(situationAssigment);
         }
 
-        if(CollectionUtils.isNotEmpty(projectWeb.getProjectLocations())){
-            this.projectLocationAssigmentService.saveOrUpdate(projectWeb.getProjectLocations(),project);
+        if (CollectionUtils.isNotEmpty(projectWeb.getProjectLocations())) {
+            this.projectLocationAssigmentService.saveOrUpdate(projectWeb.getProjectLocations(), project);
         }
+
+// creo o actualizo los general indicators
+
+        this.indicatorExecutionService.createGeneralIndicatorsForProject(project);
+
+
         return project.getId();
     }
 
@@ -176,14 +184,18 @@ public class ProjectService {
         project.setState(projectWeb.getState());
         project.setName(projectWeb.getName());
         project.setCode(projectWeb.getCode());
+        project.setTarget(projectWeb.getTarget());
 
 
         this.projectDao.update(project);
 
 
-        if(CollectionUtils.isNotEmpty(projectWeb.getProjectLocations())){
-            this.projectLocationAssigmentService.saveOrUpdate(projectWeb.getProjectLocations(),project);
+        if (CollectionUtils.isNotEmpty(projectWeb.getProjectLocations())) {
+            this.projectLocationAssigmentService.saveOrUpdate(projectWeb.getProjectLocations(), project);
         }
+        // creo o actualizo los general indicators
+
+        this.indicatorExecutionService.createGeneralIndicatorsForProject(project);
         return project.getId();
     }
 
@@ -216,7 +228,6 @@ public class ProjectService {
                     }
 
                 }
-
 
 
             }
@@ -292,6 +303,7 @@ public class ProjectService {
         project.setPeriod(period);
         project.setProjectImplementer(projectImplementer);
         project.setCode(projectWeb.getCode());
+        project.setTarget(projectWeb.getTarget());
         return project;
     }
 
@@ -305,7 +317,7 @@ public class ProjectService {
         return this.projectsToProjectWebs(this.projectDao.getByState(State.ACTIVE));
     }
 
-    protected Project saveOrUpdate(Project project) {
+    public Project saveOrUpdate(Project project) {
         if (project.getId() == null) {
             return this.projectDao.save(project);
         } else {

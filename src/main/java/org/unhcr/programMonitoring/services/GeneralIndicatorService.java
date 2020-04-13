@@ -35,6 +35,17 @@ public class GeneralIndicatorService {
         return this.generalIndicatorsToGeneralIndicatorWebs(this.generalIndicatorDao.getByPeriodId(periodId));
     }
 
+    public List<GeneralIndicator> getByPeriodId(Long periodId) {
+        return this.generalIndicatorDao.getByPeriodId(periodId);
+    }
+
+    public List<GeneralIndicator> getByPeriodIdAndState(Long periodId, State state) {
+        return this.generalIndicatorDao.getByPeriodIdAndState(periodId, state);
+    }
+
+    public List<GeneralIndicator> getByPeriodIdy(Long periodId) {
+        return this.generalIndicatorDao.getByPeriodId(periodId);
+    }
 
     public Long save(GeneralIndicatorWeb generalIndicatorWeb) throws GeneralAppException {
         this.validate(generalIndicatorWeb);
@@ -62,8 +73,8 @@ public class GeneralIndicatorService {
         if (!generalIndicatorWeb.getState().equals(org.getState())) {
             if (generalIndicatorWeb.getState().equals(State.INACTIVE) && generalIndicatorWeb.getParent()) {
                 // desactivo todos los sub indicadores
-                subs=org.getSubGeneralIndicators();
-                for(GeneralIndicator sgi:subs){
+                subs = org.getSubGeneralIndicators();
+                for (GeneralIndicator sgi : subs) {
                     sgi.setState(State.INACTIVE);
                     this.generalIndicatorDao.update(sgi);
                 }
@@ -127,11 +138,10 @@ public class GeneralIndicatorService {
             // n debe haber 2 con la misma descripción
             List<GeneralIndicator> sons = this.generalIndicatorDao.getByPeriodIdAndParent(generalIndicatorWeb.getPeriod().getId(), Boolean.FALSE);
             for (GeneralIndicator generalIndicator : sons) {
-                if (generalIndicatorWeb.getId() == null && CollectionUtils.isNotEmpty(sons)) {
-                    throw new GeneralAppException("Ya existe un indicador con esta descripción.", Response.Status.BAD_REQUEST.getStatusCode());
-                } else if (generalIndicator.getDescription().equals(generalIndicatorWeb.getDescription()) && generalIndicator.getId() != generalIndicatorWeb.getId()) {
+                if (generalIndicator.getDescription().equals(generalIndicatorWeb.getDescription()) && generalIndicator.getId() != generalIndicatorWeb.getId()) {
                     throw new GeneralAppException("Ya existe un indicador con esta descripción.", Response.Status.BAD_REQUEST.getStatusCode());
                 }
+
             }
         }
 
@@ -163,12 +173,8 @@ public class GeneralIndicatorService {
         return generalIndicator;
     }
 
-    private List<GeneralIndicator> getByPeriodId(Long periodId) {
-        return this.generalIndicatorDao.getByPeriodId(periodId);
-    }
 
-
-    private GeneralIndicatorWeb generalIndicatorToGeneralIndicatorWeb(GeneralIndicator generalIndicator) {
+    public GeneralIndicatorWeb generalIndicatorToGeneralIndicatorWeb(GeneralIndicator generalIndicator) {
         if (generalIndicator == null) return null;
 
         PeriodWeb periodWeb = this.periodService.periodToPeriodWeb(generalIndicator.getPeriod());

@@ -310,4 +310,5 @@ public class PerformanceIndicatorService {
     private List<PerformanceIndicator> getByOutputIdAndType(Long id, IndicatorType type) {
         return this.performanceIndicatorDao.getByOutputIdAndType(id, type);
     }
+
 }

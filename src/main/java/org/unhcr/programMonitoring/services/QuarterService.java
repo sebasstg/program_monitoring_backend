@@ -6,6 +6,7 @@ import org.unhcr.programMonitoring.daos.QuarterDao;
 import org.unhcr.programMonitoring.model.Canton;
 import org.unhcr.programMonitoring.model.Quarter;
 import org.unhcr.programMonitoring.webServices.model.CantonWeb;
+import org.unhcr.programMonitoring.webServices.model.QuarterWeb;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -20,12 +21,27 @@ public class QuarterService {
     @Inject
     QuarterDao quarterDao;
 
-    protected Quarter saveOrUpdate(Quarter quarter){
+    public Quarter saveOrUpdate(Quarter quarter){
         if(quarter.getId()==null){
             return this.quarterDao.save(quarter);
         }else{
             return this.quarterDao.update(quarter);
         }
+    }
+
+    public List<QuarterWeb> quartersToQuarterWebs(List<Quarter> quarters){
+        List<QuarterWeb> quarterWebs= new ArrayList<>();
+        for(Quarter quarter:quarters){
+            quarterWebs.add(this.quarterToQuarterWeb(quarter));
+        }
+        return  quarterWebs;
+    }
+
+
+    public QuarterWeb quarterToQuarterWeb(Quarter quarter){
+        if(quarter==null) return null;
+        QuarterWeb quarterWeb= new QuarterWeb(quarter.getId(),quarter.getQuarterNumber(),quarter.getCommentary());
+        return quarterWeb;
     }
 
 }

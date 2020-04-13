@@ -48,10 +48,11 @@ public class Project extends BaseEntity<Long> {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "project")
     private Set<ProjectLocationAssigment> projectLocationAssigments = new HashSet<>();
 
+    @Column(name = "target")
+    private Integer target;
 
 
     @Override
-
     public Long getId() {
         return id;
     }
@@ -148,5 +149,13 @@ public class Project extends BaseEntity<Long> {
             this.indicatorExecutions.add(indicatorExecution);
         }
 
+    }
+
+    public Integer getTarget() {
+        return target;
+    }
+
+    public void setTarget(Integer target) {
+        this.target = target;
     }
 }

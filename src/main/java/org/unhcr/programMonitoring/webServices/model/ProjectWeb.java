@@ -11,13 +11,14 @@ public class ProjectWeb {
     public ProjectWeb() {
     }
 
-    public ProjectWeb(Long id, String code, String name,  State state, PeriodWeb periodWeb, ProjectImplementerWeb projectImplementerWeb) {
+    public ProjectWeb(Long id, String code, String name,  State state, PeriodWeb periodWeb, ProjectImplementerWeb projectImplementerWeb, Integer target) {
         this.id = id;
         this.name = name;
          this.state = state;
         this.periodWeb = periodWeb;
         this.projectImplementerWeb = projectImplementerWeb;
         this.code=code;
+        this.target=target;
     }
 
     private Long id;
@@ -29,6 +30,8 @@ public class ProjectWeb {
 
 
     private State state;
+
+    private Integer target;
 
     @JsonProperty("period")
     private PeriodWeb periodWeb;
@@ -105,5 +108,13 @@ public class ProjectWeb {
 
     public void setProjectLocations(List<ProjectLocationWeb> projectLocations) {
         this.projectLocations = projectLocations;
+    }
+
+    public Integer getTarget() {
+        return target;
+    }
+
+    public void setTarget(Integer target) {
+        this.target = target;
     }
 }

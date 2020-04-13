@@ -162,13 +162,13 @@ public class PeriodPerformanceIndicatorAssigmentService {
         return this.periodPerformanceIndicatorAssigmentToPeriodPerformanceIndicatorAssigmentWeb(this.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId));
     }
 
-    private PeriodPerformanceIndicatorAssigment getByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
+    public PeriodPerformanceIndicatorAssigment getByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
         return this.periodPerformanceIndicatorAssigmentDao.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId);
     }
 
     public List<PeriodPerformanceIndicatorAssigmentWeb> getWebByStateAndPeriodIdandOutputIdAndIndicatorType(Long periodId, Long outputId, IndicatorType indicatorType, State state) {
         return this.periodPerformanceIndicatorAssigmentsToPeriodPerformanceIndicatorAssigmentWebs(this.periodPerformanceIndicatorAssigmentDao.getWebByStateAndPeriodIdandOutputIdAndIndicatorType(periodId, outputId, indicatorType,state));
-
-
     }
+
+
 }
