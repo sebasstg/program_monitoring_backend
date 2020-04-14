@@ -253,8 +253,9 @@ public class ProjectService {
         ProjectResumeWeb projectResumeWeb = new ProjectResumeWeb();
         projectResumeWeb.setId(project.getId());
         projectResumeWeb.setName(project.getName());
-        projectResumeWeb.setProgressPercentaje(null);
-        projectResumeWeb.setReportedProgress(null);
+        projectResumeWeb.setProgressPercentaje(null); //todo calcular
+        projectResumeWeb.setReportedProgress(null); //todo calcular
+        projectResumeWeb.setLastReportedMonth(null); //todo calcular
         projectResumeWeb.setProjectImplementer(this.projectImplementerService.projectImplementerToProjectImplementerWeb(project.getProjectImplementer()));
 
         List<Situation> situations = new ArrayList<>();
@@ -263,9 +264,8 @@ public class ProjectService {
         }
         projectResumeWeb.setSituations(this.situationService.situationsToSituationsWeb(situations));
 
-        projectResumeWeb.setLastReportedMonth(null);
 
-        projectResumeWeb.setTarget(null);
+        projectResumeWeb.setTarget(project.getTarget());
 
         projectResumeWeb.setState(project.getState());
 
@@ -323,5 +323,10 @@ public class ProjectService {
         } else {
             return this.projectDao.update(project);
         }
+    }
+
+    public List<ProjectResumeWeb> getByPeriodIdAndImplementerId(Long periodId, Long implementerId) {
+        return this.projectsToProjectResumeWebs(this.projectDao.getByPeriodIdAndImplementerId(periodId,implementerId));
+
     }
 }

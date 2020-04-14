@@ -45,6 +45,23 @@ public class ProjectDao extends GenericDaoJpa<Project, Long> {
         return q.getResultList();
     }
 
+    public List<Project> getByPeriodIdAndImplementerId(Long idPeriod, Long implementerId) {
+
+        String sql = "select distinct o from Project o where o.period.id=:idPeriod ";
+        String implementerFilter = " and o.projectImplementer.id=:implementerId ";
+
+        if (implementerId != null) {
+            sql = sql + implementerFilter;
+        }
+        Query q = this.getEntityManager().createQuery(sql, Project.class)
+                .setParameter("idPeriod", idPeriod);
+        if (implementerId != null) {
+            q.setParameter("implementerId", implementerId);
+        }
+
+        return q.getResultList();
+    }
+
     public List<Project> getByImplementerId(Long idImplementer) {
         String sql = "select distinct o from Project o where o.projectImplementer.id=:idImplementer ";
         Query q = this.getEntityManager().createQuery(sql, Project.class)

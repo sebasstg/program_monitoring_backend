@@ -15,5 +15,14 @@ public class IndicatorValueDao extends GenericDaoJpa<IndicatorValue, Long> {
         super(IndicatorValue.class, Long.class);
     }
 
+    public List<IndicatorValue> getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId){
+        String sql = " select distinct o from IndicatorValue o inner join fetch o.indicatorExecution ie inner join fetch ie.generalIndicator ge  inner join fetch ge.mainIndicator mi" +
+                " where ie.project.id =:projectId and mi.id =:generalIndicatorId";
 
+        Query q = this.getEntityManager().createQuery(sql, IndicatorValue.class);
+        q.setParameter("generalIndicatorId", generalIndicatorId);
+        q.setParameter("projectId", projectId);
+        return q.getResultList();
+
+    }
 }

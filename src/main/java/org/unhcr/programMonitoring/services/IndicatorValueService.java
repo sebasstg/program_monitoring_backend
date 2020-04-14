@@ -3,6 +3,8 @@ package org.unhcr.programMonitoring.services;
 import com.sagatechs.generics.exceptions.GeneralAppException;
 import org.unhcr.programMonitoring.daos.IndicatorValueDao;
 import org.unhcr.programMonitoring.model.*;
+import org.unhcr.programMonitoring.webServices.model.CantonWeb;
+import org.unhcr.programMonitoring.webServices.model.IndicatorValueWeb;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -17,6 +19,9 @@ public class IndicatorValueService {
 
     @Inject
     IndicatorValueDao indicatorValueDao;
+
+    @Inject
+    CantonService cantonService;
 
     public IndicatorValue saveOrUpdate(IndicatorValue indicatorValue){
         if(indicatorValue.getId()==null){
@@ -241,4 +246,28 @@ public class IndicatorValueService {
         result.add(q4);
         return result;
     }
+
+    public IndicatorValueWeb indicatorValueToIndicatorValueWeb(IndicatorValue indicatorValue){
+        if(indicatorValue==null) return null;
+        CantonWeb cantonWeb = this.cantonService.cantonToCantonWeb(indicatorValue.getLocation());
+        IndicatorValueWeb i = new IndicatorValueWeb(indicatorValue.getId(),indicatorValue.getMonth(),indicatorValue.getGender(),indicatorValue.getAgeGroup(),cantonWeb,indicatorValue.getValue());
+        return i;
+    }
+
+    public List<IndicatorValueWeb> indicatorValueToIndicatorValuesWebs(List<IndicatorValue> indicatorValues){
+        List<IndicatorValueWeb> r=new ArrayList<>();
+
+        for(IndicatorValue indicatorValue:indicatorValues){
+            r.add(this.indicatorValueToIndicatorValueWeb(indicatorValue));
+        }
+        return r;
+    }
+    public IndicatorValue find(Long id){
+        return this.indicatorValueDao.find(id);
+    }
+
+    public List<IndicatorValue> getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId){
+        return this.indicatorValueDao.getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(generalIndicatorId,projectId);
+    }
+
 }

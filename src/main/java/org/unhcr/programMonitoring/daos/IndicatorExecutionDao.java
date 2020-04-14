@@ -2,6 +2,7 @@ package org.unhcr.programMonitoring.daos;
 
 import com.sagatechs.generics.persistence.GenericDaoJpa;
 import org.unhcr.programMonitoring.model.IndicatorExecution;
+import org.unhcr.programMonitoring.model.IndicatorType;
 
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
@@ -25,6 +26,7 @@ public class IndicatorExecutionDao extends GenericDaoJpa<IndicatorExecution, Lon
         q.setParameter("indicatorId", indicatorId);
         return q.getResultList();
     }
+
     public List<IndicatorExecution> getPerformanceIndicatorByProjectId(Long projectId) {
 
         String sql = " select DISTINCT o from IndicatorExecution o " +
@@ -46,16 +48,24 @@ public class IndicatorExecutionDao extends GenericDaoJpa<IndicatorExecution, Lon
 
     public List<IndicatorExecution> getGeneralIndicators(Long projectId) {
 
-        String sql = " select o from IndicatorExecution o " +
-                " inner join fetch o.project pr " +
-                " inner join fetch o.generalIndicator i " +
-                " left outer join fetch o.performanceIndicatorExecutionLocationAssigments l " +
-                " left outer join fetch i.subGeneralIndicators si " +
-                " left outer  join fetch o.indicatorValues v " +
-                " where pr.id =:projectId and o.generalIndicator IS NOT null ";
+        String sql = " select distinct o from IndicatorExecution o inner join fetch o.generalIndicator gi inner join fetch o.quarters q " +
+                " where o.project.id =:projectId and o.indicatorType=:indicatorType order by gi.parent desc, o.id asc, q.quarterNumber asc ";
 
         Query q = this.getEntityManager().createQuery(sql, IndicatorExecution.class);
         q.setParameter("projectId", projectId);
-        return q.getResultList();
+        q.setParameter("indicatorType", IndicatorType.GENERAL);
+        List<IndicatorExecution> r = q.getResultList();
+        return r;
+    }
+
+    public IndicatorExecution getByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId){
+        String sql = " select distinct o from IndicatorExecution o inner join fetch o.indicatorValues " +
+                " where o.generalIndicator.id =:generalIndicatorId and o.project.id =:projectId";
+
+        Query q = this.getEntityManager().createQuery(sql, IndicatorExecution.class);
+        q.setParameter("generalIndicatorId", generalIndicatorId);
+        q.setParameter("projectId", projectId);
+        return (IndicatorExecution) q.getSingleResult();
+
     }
 }

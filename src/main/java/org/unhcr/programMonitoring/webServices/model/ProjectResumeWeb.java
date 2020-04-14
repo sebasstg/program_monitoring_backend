@@ -19,6 +19,7 @@ public class ProjectResumeWeb {
     private ProjectImplementerWeb projectImplementer;
 
     private String code;
+
     private String name;
 
     private BigDecimal progressPercentaje;
@@ -30,14 +31,6 @@ public class ProjectResumeWeb {
     private String lastReportedMonth;
 
     private Integer target;
-
-   /* @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate reportingStartingDate;
-
-    @JsonSerialize(using = LocalDateSerializer.class)
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    private LocalDate reportingFinishingDate;*/
 
     private State state;
 

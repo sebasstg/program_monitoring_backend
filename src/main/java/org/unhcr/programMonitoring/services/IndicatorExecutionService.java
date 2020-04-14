@@ -84,7 +84,7 @@ public class IndicatorExecutionService {
         Situation situation = this.situationService.find(indicatorExecutionWeb.getSituation().getId());
 
         List<IndicatorExecution> r = this.indicatorExecutionDao.getPerformanceIndicatorByProjectIdAndIndicatorId(project.getId(), periodPerformanceIndicatorAssigment.getPerformanceIndicator().getId());
-        if(CollectionUtils.isNotEmpty(r)){
+        if (CollectionUtils.isNotEmpty(r)) {
             throw new GeneralAppException("Este indicador ya está asignado al proyecto.", Response.Status.BAD_REQUEST.getStatusCode());
         }
 
@@ -265,7 +265,7 @@ public class IndicatorExecutionService {
         }
 
         List<Quarter> quarters = this.indicatorValueService.createQuarters(values);
-        for (Quarter quarter :quarters) {
+        for (Quarter quarter : quarters) {
             indicatorExecution.addQuarter(quarter);
         }
 //guarda
@@ -365,5 +365,8 @@ public class IndicatorExecutionService {
 
     }
 
+    public IndicatorExecution getByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId) {
+        return this.indicatorExecutionDao.getByGeneralIndicatorIdAndProjectId(generalIndicatorId, projectId);
+    }
 
 }

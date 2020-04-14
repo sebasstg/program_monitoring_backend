@@ -61,6 +61,8 @@ public class AdministrationEndpoint {
     @Inject
     IndicatorExecutionService indicatorExecutionService;
 
+    @Inject
+    QuarterService quarterService;
 
     @Path("/rightGroup")
     @GET
@@ -249,14 +251,14 @@ public class AdministrationEndpoint {
     @Path("performanceIndicator/output/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PerformanceIndicatorWeb> getPerformanceIndicatorsByOutputId(@PathParam("id") Long id)  {
+    public List<PerformanceIndicatorWeb> getPerformanceIndicatorsByOutputId(@PathParam("id") Long id) {
         return this.performanceIndicatorService.getWebByOutputId(id);
     }
 
     @Path("performanceIndicator/output/{id}/type/{type}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PerformanceIndicatorWeb> getPerformanceIndicatorsByOutputIdAndType(@PathParam("id") Long id, @PathParam("type") IndicatorType type)  {
+    public List<PerformanceIndicatorWeb> getPerformanceIndicatorsByOutputIdAndType(@PathParam("id") Long id, @PathParam("type") IndicatorType type) {
         return this.performanceIndicatorService.getWebByOutputIdAndType(id, type);
     }
 
@@ -472,11 +474,20 @@ public class AdministrationEndpoint {
         return this.projectService.getWebById(id);
     }
 
+
     @Path("/project/resume/byPeriod/{periodId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<ProjectResumeWeb> getProjecResumetByPeriodId(@PathParam("periodId") Long periodId) {
         return this.projectService.getResumeWebByPeriodId(periodId);
+    }
+
+
+    @Path("/project/resume/byPeriodAndImplementer/{periodId}/{implementerId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ProjectResumeWeb> getProjecResumetByPeriodId(@PathParam("periodId") Long periodId, @PathParam("implementerId") Long implementerId) {
+        return this.projectService.getByPeriodIdAndImplementerId(periodId, implementerId);
     }
 
 
@@ -547,6 +558,7 @@ public class AdministrationEndpoint {
 
     /**
      * General Indicator
+     *
      * @return
      */
 
@@ -562,7 +574,7 @@ public class AdministrationEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<IndicatorExecutionWeb> getMainGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) {
-        return this.indicatorExecutionService.getPerformanceIndicatorByProjectId(projectId);
+        return this.indicatorExecutionService.getGeneralIndicatorByProjectId(projectId);
     }
 
     @Path("/indicatorExecution/performance")
@@ -573,11 +585,25 @@ public class AdministrationEndpoint {
     }
 
 
-
     @Path("/indicatorExecution/performance")
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     public Long updateIndicatorExecution(IndicatorExecutionWeb indicatorExecutionWeb) throws GeneralAppException {
         return this.indicatorExecutionService.updateIndicatorExecution(indicatorExecutionWeb);
+    }
+
+    //***** Quarters
+
+    @Path("/quartervalues/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public QuarterValuesWeb getQuarterValuesById(@PathParam("id") Long quarterId) {
+        return this.quarterService.getWebValuesById(quarterId);
+    }
+    @Path("/quartervalues")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updateGeneralIndicator(QuarterValuesWeb quarterValuesWeb) throws GeneralAppException {
+        return this.quarterService.update(quarterValuesWeb);
     }
 }
