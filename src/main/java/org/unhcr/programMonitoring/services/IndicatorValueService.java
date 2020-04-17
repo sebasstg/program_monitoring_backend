@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.services;
 
 import com.sagatechs.generics.exceptions.GeneralAppException;
+import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.daos.IndicatorValueDao;
 import org.unhcr.programMonitoring.model.*;
 import org.unhcr.programMonitoring.webServices.model.CantonWeb;
@@ -268,6 +269,10 @@ public class IndicatorValueService {
 
     public List<IndicatorValue> getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId){
         return this.indicatorValueDao.getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(generalIndicatorId,projectId);
+    }
+
+    public List<IndicatorValue> getByIndicatorExecutionId(Long indicatorExecutionId){
+        return this.indicatorValueDao.getByIndicatorExecutionId(indicatorExecutionId);
     }
 
 }

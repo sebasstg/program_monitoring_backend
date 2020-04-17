@@ -1,5 +1,6 @@
 package org.unhcr.programMonitoring.services;
 
+import com.sagatechs.generics.persistence.model.State;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.IndicatorExecutionDao;
 import org.unhcr.programMonitoring.daos.IndicatorValueDao;
@@ -66,7 +67,7 @@ public class QuarterService {
         if (quarter == null) return null;
         QuarterWeb quarterWeb = new QuarterWeb(quarter.getId(), quarter.getQuarterNumber(), quarter.getCommentary());
 
-        BigDecimal t = quarter.getIndicatorValues().stream().map(indicatorValue -> indicatorValue.getValue()!=null?indicatorValue.getValue():BigDecimal.ZERO).reduce(BigDecimal.ZERO,BigDecimal::add);
+        BigDecimal t = quarter.getIndicatorValues().stream().map(indicatorValue -> indicatorValue.getValue() != null ? indicatorValue.getValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
         quarterWeb.setTotalExecution(t);
         return quarterWeb;
     }
@@ -94,8 +95,35 @@ public class QuarterService {
 
     }
 
-    private void updateIndicator(QuarterValuesWeb quarterValuesWeb, Quarter quarter) {
-        return;
+    private Long updateIndicator(QuarterValuesWeb quarterValuesWeb, Quarter quarter) {
+        for (IndicatorValueWeb indicatorValueWeb : quarterValuesWeb.getIndicatorValues()) {
+            IndicatorValue indicatorValue = this.indicatorValueService.find(indicatorValueWeb.getId());
+            indicatorValue.setValue(indicatorValueWeb.getValue());
+            this.indicatorValueService.saveOrUpdate(indicatorValue);
+            //updatedValues.add(indicatorValue);
+        }
+        IndicatorExecution indicatorExecution = quarter.getIndicatorExecution();
+
+        this.updateTotalValuesIndicatorExecution(indicatorExecution);
+
+        return quarter.getId();
+    }
+
+    private IndicatorExecution updateTotalValuesIndicatorExecution(IndicatorExecution indicatorExecution) {
+        List<IndicatorValue> totalValues = this.indicatorValueService.getByIndicatorExecutionId(indicatorExecution.getId());
+
+        BigDecimal t = totalValues.stream().map(indicatorValue -> indicatorValue.getValue() != null ? indicatorValue.getValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        indicatorExecution.setTotalExecution(t.intValue());
+
+        Double perc=0d;
+        if(indicatorExecution.getTarget()!=null && indicatorExecution.getTarget()>0){
+            perc=((double)indicatorExecution.getTotalExecution()/(double)indicatorExecution.getTarget())*100;
+        }
+        indicatorExecution.setExecutionPercentage((int)Math.round(perc));
+        this.indicatorExecutionDao.update(indicatorExecution);
+        return indicatorExecution;
+
     }
 
     private Long updateGeneral(QuarterValuesWeb quarterValuesWeb, Quarter quarter) {
@@ -110,6 +138,8 @@ public class QuarterService {
 
         GeneralIndicator generalIndicatorMain = quarter.getIndicatorExecution().getGeneralIndicator().getMainIndicator();
         IndicatorExecution generalMainExecution = this.indicatorExecutionDao.getByGeneralIndicatorIdAndProjectId(generalIndicatorMain.getId(), quarter.getIndicatorExecution().getProject().getId());
+
+
 
         Set<IndicatorValue> mainValues = generalMainExecution.getIndicatorValues();
 
@@ -137,12 +167,19 @@ public class QuarterService {
             List<IndicatorValue> filterresult = subValues.stream().filter(byParameters)
                     .collect(Collectors.toList());
 
-            BigDecimal t = filterresult.stream().map(indicatorValue -> indicatorValue.getValue()!=null?indicatorValue.getValue():BigDecimal.ZERO).reduce(BigDecimal.ZERO,BigDecimal::add);
+            BigDecimal t = filterresult.stream().map(indicatorValue -> indicatorValue.getValue() != null ? indicatorValue.getValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
 
             indicatorMainValue.setValue(t);
 
             this.indicatorValueService.saveOrUpdate(indicatorMainValue);
         }
+
+        List<IndicatorExecution> generalIndicators = this.indicatorExecutionDao.getGeneralIndicators(generalMainExecution.getProject().getId());
+        for(IndicatorExecution generalIndicatorExecution:generalIndicators){
+
+            this.updateTotalValuesIndicatorExecution(generalIndicatorExecution);
+        }
+
 
         return quarter.getId();
     }

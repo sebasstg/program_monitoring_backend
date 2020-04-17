@@ -302,6 +302,10 @@ public class IndicatorExecutionService {
     public List<IndicatorExecutionWeb> getPerformanceIndicatorByProjectId(Long projectId) {
         return this.indicatorExecutionsToIndicatorExecutionWebs(this.indicatorExecutionDao.getPerformanceIndicatorByProjectId(projectId));
     }
+    public List<IndicatorExecutionWeb> getPerformanceIndicatorByProjectIdAndState(Long projectId, State state) {
+        return this.indicatorExecutionsToIndicatorExecutionWebs(this.indicatorExecutionDao.getPerformanceIndicatorByProjectIdAndState(projectId,state));
+    }
+
 
     public List<IndicatorExecutionWeb> getGeneralIndicatorByProjectId(Long projectId) {
         return this.indicatorExecutionsToIndicatorExecutionWebs(this.indicatorExecutionDao.getGeneralIndicators(projectId));

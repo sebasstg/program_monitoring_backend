@@ -1,6 +1,7 @@
 package org.unhcr.programMonitoring.daos;
 
 import com.sagatechs.generics.persistence.GenericDaoJpa;
+import com.sagatechs.generics.persistence.model.State;
 import org.unhcr.programMonitoring.model.Canton;
 import org.unhcr.programMonitoring.model.IndicatorValue;
 
@@ -22,6 +23,17 @@ public class IndicatorValueDao extends GenericDaoJpa<IndicatorValue, Long> {
         Query q = this.getEntityManager().createQuery(sql, IndicatorValue.class);
         q.setParameter("generalIndicatorId", generalIndicatorId);
         q.setParameter("projectId", projectId);
+        return q.getResultList();
+
+    }
+
+    public List<IndicatorValue> getByIndicatorExecutionId(Long indicatorExecutionId){
+        String sql = " select distinct o from IndicatorValue o inner join fetch o.indicatorExecution ie" +
+                " where ie.id =:indicatorExecutionId ";
+
+        Query q = this.getEntityManager().createQuery(sql, IndicatorValue.class);
+        q.setParameter("indicatorExecutionId", indicatorExecutionId);
+
         return q.getResultList();
 
     }

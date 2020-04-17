@@ -570,10 +570,28 @@ public class AdministrationEndpoint {
         return this.indicatorExecutionService.getPerformanceIndicatorByProjectId(projectId);
     }
 
+    @Path("/indicatorExecution/performanceByProjectId/actives/{projectId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<IndicatorExecutionWeb> getIndicatorExecutionActivesByProjectId(@PathParam("projectId") Long projectId) {
+        return this.indicatorExecutionService.getPerformanceIndicatorByProjectIdAndState(projectId, State.ACTIVE);
+    }
+
+
+
     @Path("/indicatorExecution/mainGeneralByProjectId/{projectId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<IndicatorExecutionWeb> getMainGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) {
+        return this.indicatorExecutionService.getGeneralIndicatorByProjectId(projectId);
+    }
+
+
+
+    @Path("/indicatorExecution/NoGeneralByProjectId/{projectId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<IndicatorExecutionWeb> getNoGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) {
         return this.indicatorExecutionService.getGeneralIndicatorByProjectId(projectId);
     }
 

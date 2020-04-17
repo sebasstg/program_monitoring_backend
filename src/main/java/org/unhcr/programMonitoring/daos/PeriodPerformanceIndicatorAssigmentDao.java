@@ -45,12 +45,12 @@ public class PeriodPerformanceIndicatorAssigmentDao extends GenericDaoJpa<Period
 
     public List<PeriodPerformanceIndicatorAssigment> getWebByStateAndPeriodIdandOutputIdAndIndicatorType(Long periodId, Long outputId, IndicatorType indicatorType, State state) {
 
-        String sql = "select distinct o from PeriodPerformanceIndicatorAssigment o inner join fetch o.performanceIndicator p inner  join fetch o.period" +
-                //" left outer  join fetch o. " +
-                " where o.period.id= :periodId " +
-                " and o.performanceIndicator.indicatorType =: indicatorType" +
-                " and o.performanceIndicator.output.id =: outputId " +
-                " and o.performanceIndicator.state =: state " +
+        String sql = "select distinct o from PeriodPerformanceIndicatorAssigment o " +
+                "inner join fetch o.performanceIndicator pi inner  join fetch o.period pe" +
+                " where pe.id= :periodId " +
+                " and pi.indicatorType =: indicatorType" +
+                " and pi.output.id =: outputId " +
+                " and o.state =: state " +
                 " order by o.performanceIndicator.description";
         Query q = this.getEntityManager().createQuery(sql, PeriodPerformanceIndicatorAssigment.class)
                 .setParameter("periodId", periodId)
