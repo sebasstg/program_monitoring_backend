@@ -5,10 +5,7 @@ import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.IndicatorExecutionDao;
 import org.unhcr.programMonitoring.daos.IndicatorValueDao;
 import org.unhcr.programMonitoring.daos.QuarterDao;
-import org.unhcr.programMonitoring.model.GeneralIndicator;
-import org.unhcr.programMonitoring.model.IndicatorExecution;
-import org.unhcr.programMonitoring.model.IndicatorValue;
-import org.unhcr.programMonitoring.model.Quarter;
+import org.unhcr.programMonitoring.model.*;
 import org.unhcr.programMonitoring.webServices.model.IndicatorValueWeb;
 import org.unhcr.programMonitoring.webServices.model.QuarterValuesWeb;
 import org.unhcr.programMonitoring.webServices.model.QuarterWeb;
@@ -16,6 +13,7 @@ import org.unhcr.programMonitoring.webServices.model.QuarterWeb;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -67,8 +65,22 @@ public class QuarterService {
         if (quarter == null) return null;
         QuarterWeb quarterWeb = new QuarterWeb(quarter.getId(), quarter.getQuarterNumber(), quarter.getCommentary());
 
-        BigDecimal t = quarter.getIndicatorValues().stream().map(indicatorValue -> indicatorValue.getValue() != null ? indicatorValue.getValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
-        quarterWeb.setTotalExecution(t);
+
+        if (!quarter.getIndicatorExecution().getMeasureType().equals(MeasureType.PERCENTAGE)) {
+            BigDecimal t = quarter.getIndicatorValues().stream().map(indicatorValue -> indicatorValue.getValue() != null ? indicatorValue.getValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+            quarterWeb.setTotalExecution(t);
+        } else {
+            BigDecimal num = quarter.getIndicatorValues().stream().map(indicatorValue -> indicatorValue.getNumeratorValue() != null ? indicatorValue.getNumeratorValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal den = quarter.getIndicatorValues().stream().map(indicatorValue -> indicatorValue.getDenominatorValue() != null ? indicatorValue.getDenominatorValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal total = BigDecimal.ZERO;
+
+            if (den != null && !den.equals(BigDecimal.ZERO)) {
+                total = num.divide(den, 4, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100));
+            }
+            quarterWeb.setTotalExecution(total);
+
+
+        }
         return quarterWeb;
     }
 
@@ -98,7 +110,17 @@ public class QuarterService {
     private Long updateIndicator(QuarterValuesWeb quarterValuesWeb, Quarter quarter) {
         for (IndicatorValueWeb indicatorValueWeb : quarterValuesWeb.getIndicatorValues()) {
             IndicatorValue indicatorValue = this.indicatorValueService.find(indicatorValueWeb.getId());
-            indicatorValue.setValue(indicatorValueWeb.getValue());
+
+            if (quarter.getIndicatorExecution().getMeasureType().equals(MeasureType.PERCENTAGE)) {
+                indicatorValue.setNumeratorValue(indicatorValueWeb.getNumeratorValue());
+                indicatorValue.setDenominatorValue(indicatorValueWeb.getDenominatorValue());
+                if (indicatorValue.getDenominatorValue() != null && !indicatorValue.getDenominatorValue().equals(BigDecimal.ZERO)) {
+                    indicatorValue.setValue(indicatorValue.getNumeratorValue().divide(indicatorValue.getDenominatorValue(), 2, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)));
+                }
+            } else {
+                indicatorValue.setValue(indicatorValueWeb.getValue());
+            }
+
             this.indicatorValueService.saveOrUpdate(indicatorValue);
             //updatedValues.add(indicatorValue);
         }
@@ -112,15 +134,36 @@ public class QuarterService {
     private IndicatorExecution updateTotalValuesIndicatorExecution(IndicatorExecution indicatorExecution) {
         List<IndicatorValue> totalValues = this.indicatorValueService.getByIndicatorExecutionId(indicatorExecution.getId());
 
-        BigDecimal t = totalValues.stream().map(indicatorValue -> indicatorValue.getValue() != null ? indicatorValue.getValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (!indicatorExecution.getMeasureType().equals(MeasureType.PERCENTAGE)) {
+            BigDecimal t = totalValues.stream().map(indicatorValue -> indicatorValue.getValue() != null ? indicatorValue.getValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        indicatorExecution.setTotalExecution(t.intValue());
+            indicatorExecution.setTotalExecution(t.intValue());
 
-        Double perc=0d;
-        if(indicatorExecution.getTarget()!=null && indicatorExecution.getTarget()>0){
-            perc=((double)indicatorExecution.getTotalExecution()/(double)indicatorExecution.getTarget())*100;
+            Double perc = 0d;
+            if (indicatorExecution.getTarget() != null && indicatorExecution.getTarget() > 0) {
+                perc = ((double) indicatorExecution.getTotalExecution() / (double) indicatorExecution.getTarget()) * 100;
+            }
+            indicatorExecution.setExecutionPercentage((int) Math.round(perc));
+        } else {
+            if (indicatorExecution.getTarget() != null && indicatorExecution.getTarget() > 0) {
+                BigDecimal num = totalValues.stream().map(indicatorValue -> indicatorValue.getNumeratorValue() != null ? indicatorValue.getNumeratorValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal den = totalValues.stream().map(indicatorValue -> indicatorValue.getDenominatorValue() != null ? indicatorValue.getDenominatorValue() : BigDecimal.ZERO).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal total = null;
+                Integer per=null;
+                if (den != null && !den.equals(BigDecimal.ZERO)) {
+                    total = num.divide(den, 0, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100));
+                }
+                if(total!=null){
+                 //   per=total.intValue()/indicatorExecution.getTarget();
+                    per=total.intValue();
+                    indicatorExecution.setTotalExecution(per);
+                    indicatorExecution.setExecutionPercentage(per);
+                }
+
+
+            }
+
         }
-        indicatorExecution.setExecutionPercentage((int)Math.round(perc));
         this.indicatorExecutionDao.update(indicatorExecution);
         return indicatorExecution;
 
@@ -132,13 +175,14 @@ public class QuarterService {
         for (IndicatorValueWeb indicatorValueWeb : quarterValuesWeb.getIndicatorValues()) {
             IndicatorValue indicatorValue = this.indicatorValueService.find(indicatorValueWeb.getId());
             indicatorValue.setValue(indicatorValueWeb.getValue());
+            indicatorValue.setNumeratorValue(indicatorValueWeb.getValue());
+            indicatorValue.setDenominatorValue(indicatorValueWeb.getValue());
             this.indicatorValueService.saveOrUpdate(indicatorValue);
             updatedValues.add(indicatorValue);
         }
 
         GeneralIndicator generalIndicatorMain = quarter.getIndicatorExecution().getGeneralIndicator().getMainIndicator();
         IndicatorExecution generalMainExecution = this.indicatorExecutionDao.getByGeneralIndicatorIdAndProjectId(generalIndicatorMain.getId(), quarter.getIndicatorExecution().getProject().getId());
-
 
 
         Set<IndicatorValue> mainValues = generalMainExecution.getIndicatorValues();
@@ -175,7 +219,7 @@ public class QuarterService {
         }
 
         List<IndicatorExecution> generalIndicators = this.indicatorExecutionDao.getGeneralIndicators(generalMainExecution.getProject().getId());
-        for(IndicatorExecution generalIndicatorExecution:generalIndicators){
+        for (IndicatorExecution generalIndicatorExecution : generalIndicators) {
 
             this.updateTotalValuesIndicatorExecution(generalIndicatorExecution);
         }

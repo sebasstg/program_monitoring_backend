@@ -11,13 +11,15 @@ public class IndicatorValueWeb {
     public IndicatorValueWeb() {
     }
 
-    public IndicatorValueWeb(Long id, Month month, Gender gender, AgeGroup ageGroup, CantonWeb location, BigDecimal value) {
+    public IndicatorValueWeb(Long id, Month month, Gender gender, AgeGroup ageGroup, CantonWeb location, BigDecimal value, BigDecimal numeratorValue, BigDecimal denominatorValue) {
         this.id = id;
         this.month = month;
         this.gender = gender;
         this.ageGroup = ageGroup;
         this.location = location;
         this.value = value;
+        this.numeratorValue=numeratorValue;
+        this.denominatorValue=denominatorValue;
     }
 
     private Long id;
@@ -31,6 +33,10 @@ public class IndicatorValueWeb {
     private CantonWeb location;
 
     private BigDecimal value;
+
+    private BigDecimal denominatorValue;
+
+    private BigDecimal numeratorValue;
 
 
     public Long getId() {
@@ -79,5 +85,21 @@ public class IndicatorValueWeb {
 
     public void setValue(BigDecimal value) {
         this.value = value;
+    }
+
+    public BigDecimal getDenominatorValue() {
+        return denominatorValue;
+    }
+
+    public void setDenominatorValue(BigDecimal denominatorValue) {
+        this.denominatorValue = denominatorValue;
+    }
+
+    public BigDecimal getNumeratorValue() {
+        return numeratorValue;
+    }
+
+    public void setNumeratorValue(BigDecimal numeratorValue) {
+        this.numeratorValue = numeratorValue;
     }
 }

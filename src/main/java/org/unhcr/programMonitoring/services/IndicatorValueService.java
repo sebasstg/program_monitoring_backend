@@ -251,7 +251,9 @@ public class IndicatorValueService {
     public IndicatorValueWeb indicatorValueToIndicatorValueWeb(IndicatorValue indicatorValue){
         if(indicatorValue==null) return null;
         CantonWeb cantonWeb = this.cantonService.cantonToCantonWeb(indicatorValue.getLocation());
-        IndicatorValueWeb i = new IndicatorValueWeb(indicatorValue.getId(),indicatorValue.getMonth(),indicatorValue.getGender(),indicatorValue.getAgeGroup(),cantonWeb,indicatorValue.getValue());
+        IndicatorValueWeb i = new IndicatorValueWeb(indicatorValue.getId(),indicatorValue.getMonth(),indicatorValue.getGender(),indicatorValue.getAgeGroup(),
+                cantonWeb,indicatorValue.getValue(), indicatorValue.getNumeratorValue(), indicatorValue.getDenominatorValue()
+        );
         return i;
     }
 

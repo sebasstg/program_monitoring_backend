@@ -48,6 +48,12 @@ public class IndicatorValue extends BaseEntity<Long> {
     @Column(name = "value")
     private BigDecimal value;
 
+    @Column(name = "denominator_value")
+    private BigDecimal denominatorValue;
+
+    @Column(name = "numerator_value")
+    private BigDecimal numeratorValue;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "indicator_execution_id", foreignKey = @ForeignKey(name = "fk_performance_indicator_execution_value"))
     private IndicatorExecution indicatorExecution;
@@ -119,6 +125,22 @@ public class IndicatorValue extends BaseEntity<Long> {
 
     public void setQuarter(Quarter quarter) {
         this.quarter = quarter;
+    }
+
+    public BigDecimal getDenominatorValue() {
+        return denominatorValue;
+    }
+
+    public void setDenominatorValue(BigDecimal denominatorValue) {
+        this.denominatorValue = denominatorValue;
+    }
+
+    public BigDecimal getNumeratorValue() {
+        return numeratorValue;
+    }
+
+    public void setNumeratorValue(BigDecimal numeratorValue) {
+        this.numeratorValue = numeratorValue;
     }
 
     @Override
