@@ -8,6 +8,9 @@ public class TokensWeb {
     private String username;
 
     private String name;
+    private String phoneNumber;
+
+    private String email;
 
     private String[] roles = {};
 
@@ -84,5 +87,19 @@ public class TokensWeb {
         this.expires_in = expires_in;
     }
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

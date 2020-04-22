@@ -4,10 +4,9 @@ import com.sagatechs.generics.exceptions.AccessDeniedException;
 import com.sagatechs.generics.exceptions.AuthorizationException;
 import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
+import com.sagatechs.generics.security.dao.RoleAssigmentDao;
 import com.sagatechs.generics.security.dao.UserDao;
-import com.sagatechs.generics.security.model.RoleAssigment;
-import com.sagatechs.generics.security.model.RoleType;
-import com.sagatechs.generics.security.model.User;
+import com.sagatechs.generics.security.model.*;
 import com.sagatechs.generics.service.EmailService;
 import com.sagatechs.generics.utils.SecurityUtils;
 import com.sagatechs.generics.webservice.webModel.*;
@@ -22,6 +21,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jboss.logging.Logger;
+import org.unhcr.programMonitoring.model.ProjectImplementer;
+import org.unhcr.programMonitoring.services.ProjectImplementerService;
 
 import javax.crypto.SecretKey;
 import javax.ejb.Stateless;
@@ -58,6 +59,15 @@ public class UserService implements Serializable {
 
     @Inject
     com.sagatechs.generics.utils.StringUtils stringUtils;
+
+    @Inject
+    ProjectImplementerService projectImplementerService;
+
+    @Inject
+    RoleService roleService;
+
+    @Inject
+    RoleAssigmentDao roleAssigmentDao;
 
     private static final int EXPIRATION_TIME_SECONDS = 86400;// 6400;
     private static final int EXPIRATION_TIME_SECONDS_REFRESH = 86400 * 7;// 6400;
@@ -102,7 +112,7 @@ public class UserService implements Serializable {
 
         // obtengo el hash del pass enviado
         byte[] hashedPass = this.securityUtils.hashPasswordByte(password, salt);
-        User user = this.userDao.findByUserNameAndPasswordWithRoles(username, hashedPass, State.ACTIVE);
+        User user =this.userDao.findByUserNameAndPasswordWithRoles(username, hashedPass, State.ACTIVE);
 
         return user;
     }
@@ -204,6 +214,20 @@ public class UserService implements Serializable {
     }
 
     /**
+     * Envía mensaje a correo electrónico para envio de código de seguridad
+     *
+     * @param email
+     * @param pass
+     */
+    private void sendEmailNewPassword(String email, String pass, String username) {
+
+        this.emailService.sendEmailMessage(email, "Contraseña",
+                "Se ha generado una nueva contraseña para su usuario "+username+". La contraseña es: " + pass
+                        + ". En caso de no haber solicitado el cambio de contraseña, informar al administrador del sistema.");
+
+    }
+
+    /**
      * Setea nuevo pass y verifica codigo de seguridad
      *
      * @param username
@@ -258,7 +282,7 @@ public class UserService implements Serializable {
 
             return generatedTokens;
         } else {
-            throw new AuthorizationException(
+             throw new AuthorizationException(
                     "Acceso denegado. Por favor ingrese correctamente el nombre de usuario y contraseña.");
         }
 
@@ -310,6 +334,8 @@ public class UserService implements Serializable {
         generatedTokens.setExpires_in(EXPIRATION_TIME_SECONDS);
         generatedTokens.setUsername(user.getUsername());
         generatedTokens.setName(user.getName());
+        generatedTokens.setEmail(user.getEmail());
+        generatedTokens.setPhoneNumber(user.getPhoneNumber());
         generatedTokens.setRoles(rolesActivos.toArray(new String[0]));
 
         return generatedTokens;
@@ -733,5 +759,160 @@ public class UserService implements Serializable {
             userWeb.setTelefono(user.getPhoneNumber());
             return userWeb;
         }
+    }
+
+    public List<UserDataWeb> getAllUsersDataWeb()  {
+
+
+        List<User> users = this.userDao.findAll();
+        return this.usersToUserDataWebs(users);
+
+
+    }
+
+    public UserDataWeb getWebById(Long id)  {
+
+
+        User user = this.userDao.find(id);
+        return this.userToUserDataWeb(user);
+
+
+    }
+
+    private List<UserDataWeb> usersToUserDataWebs(List<User> users){
+        List<UserDataWeb> r= new ArrayList<>();
+        for(User user:users){
+            r.add(this.userToUserDataWeb(user));
+
+        }
+        return r;
+    }
+
+    private UserDataWeb userToUserDataWeb(User user){
+        UserDataWeb userWeb = new UserDataWeb();
+        userWeb.setId(user.getId());
+        userWeb.setNombre(user.getUsername());
+        userWeb.setCorreo(user.getEmail());
+        userWeb.setUsername(user.getUsername());
+        userWeb.setTelefono(user.getPhoneNumber());
+        userWeb.setProjectImplementer(this.projectImplementerService.projectImplementerToProjectImplementerWeb(user.getProjectImplementer()));
+        for(RoleAssigment rola:user.getRoleAssigments()){
+            userWeb.getRoles().add(rola.getRole().getRoleType());
+        }
+        return userWeb;
+    }
+
+    public Long createUser(UserDataWeb dataWeb){
+
+
+        User user = new User();
+        user.setUsername(dataWeb.getUsername());//
+        user.setName(dataWeb.getNombre());
+        user.setPhoneNumber(dataWeb.getTelefono());
+        user.setEmail(dataWeb.getCorreo());
+        user.setState(dataWeb.getState());
+        user.setState(dataWeb.getState());
+        ProjectImplementer projectImplementer=null;
+        if(dataWeb.getProjectImplementer()!=null){
+            projectImplementer=projectImplementerService.find(dataWeb.getProjectImplementer().getId());
+            user.setProjectImplementer(projectImplementer);
+        }
+
+        if(dataWeb.getRoles()!=null && dataWeb.getRoles().size()>0){
+            for(RoleType roleType:dataWeb.getRoles()){
+                RoleAssigment roleAssigment= new RoleAssigment();
+                Role role=this.roleService.findByRoleType(roleType) ;
+                roleAssigment.setRole(role);
+                roleAssigment.setState(State.ACTIVE);
+                roleAssigment.setUser(user);
+                roleAssigment.setId(new RoleAssigmentId(user.getId(),role.getId()));
+                user.getRoleAssigments().add(roleAssigment);
+            }
+        }
+
+        String pass=this.securityUtils.generateRamdomPassword();
+        byte[] encPass=this.securityUtils.hashPasswordByte(pass, UserService.salt);
+        user.setPassword(encPass);
+        this.userDao.save(user);
+        for(RoleAssigment role: user.getRoleAssigments()){
+            this.roleAssigmentDao.save(role);
+        }
+
+        this.sendEmailNewPassword(user.getEmail(), pass, user.getUsername());
+
+
+
+        return user.getId();
+    }
+
+    public Long updateUser(UserDataWeb dataWeb){
+
+        User user =this.userDao.find(dataWeb.getId());
+
+        user.setUsername(dataWeb.getUsername());//
+        user.setName(dataWeb.getNombre());
+        user.setPhoneNumber(dataWeb.getTelefono());
+        user.setEmail(dataWeb.getCorreo());
+        user.setState(dataWeb.getState());
+
+        ProjectImplementer projectImplementer=null;
+        if(dataWeb.getProjectImplementer()!=null){
+            projectImplementer=projectImplementerService.find(dataWeb.getProjectImplementer().getId());
+            user.setProjectImplementer(projectImplementer);
+        }
+
+        for(RoleAssigment ra:user.getRoleAssigments()){
+            this.roleAssigmentDao.remove(ra);
+            user.getRoleAssigments().remove(ra);
+        }
+
+        if(dataWeb.getRoles()!=null && dataWeb.getRoles().size()>0){
+            for(RoleType roleType:dataWeb.getRoles()){
+                RoleAssigment roleAssigment= new RoleAssigment();
+                Role role=this.roleService.findByRoleType(roleType) ;
+                roleAssigment.setRole(role);
+                roleAssigment.setState(State.ACTIVE);
+                roleAssigment.setUser(user);
+                roleAssigment.setId(new RoleAssigmentId(user.getId(),role.getId()));
+                user.getRoleAssigments().add(roleAssigment);
+            }
+        }
+
+
+        this.userDao.save(user);
+        for(RoleAssigment role: user.getRoleAssigments()){
+            this.roleAssigmentDao.save(role);
+        }
+
+
+
+        return user.getId();
+    }
+
+    public Long updatePasswordUser(Long idUser, String newPass){
+
+        User user =this.userDao.find(idUser);
+
+        String pass=newPass;
+        byte[] encPass=this.securityUtils.hashPasswordByte(pass, UserService.salt);
+        user.setPassword(encPass);
+        this.userDao.save(user);
+
+        return user.getId();
+    }
+
+
+    public Long resetPasswordUser(Long idUser){
+
+        User user =this.userDao.find(idUser);
+
+        String pass=this.securityUtils.generateRamdomPassword();
+        byte[] encPass=this.securityUtils.hashPasswordByte(pass, UserService.salt);
+        user.setPassword(encPass);
+        this.userDao.save(user);
+
+        this.sendEmailNewPassword(user.getEmail(), pass, user.getUsername());
+
+        return user.getId();
     }
 }

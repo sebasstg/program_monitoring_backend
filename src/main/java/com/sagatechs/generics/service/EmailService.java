@@ -48,7 +48,7 @@ public class EmailService {
             prop.put("mail.smtp.host", this.appConfigurationService.findValorByClave(AppConfigurationKey.EMAIL_SMTP_HOST));
             prop.put("mail.smtp.port", this.appConfigurationService.findValorByClave(AppConfigurationKey.EMAIL_SMTP_PORT));
             prop.put("mail.smtp.auth", this.appConfigurationService.findValorByClave(AppConfigurationKey.EMAIL_SMTP));
-            prop.put("mail.smtp.socketFactory.poºrt", this.appConfigurationService.findValorByClave(AppConfigurationKey.EMAIL_SMTP_PORT));
+            prop.put("mail.smtp.socketFactory.port", this.appConfigurationService.findValorByClave(AppConfigurationKey.EMAIL_SMTP_PORT));
             prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             mailUsername = this.appConfigurationService.findValorByClave(AppConfigurationKey.EMAIL_USERNAME);
             mailPassword = this.appConfigurationService.findValorByClave(AppConfigurationKey.EMAIL_PASSOWRD);

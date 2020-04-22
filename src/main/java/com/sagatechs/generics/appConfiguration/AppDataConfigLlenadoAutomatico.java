@@ -62,7 +62,7 @@ public class AppDataConfigLlenadoAutomatico {
     @PostConstruct
     private void init() {
         LOGGER.debug("Iniciando llenado automatico");
-       /* this.createAppConfigs();
+       /*this.createAppConfigs();
         this.cargarRoles();
         this.cargarUsuarios();*/
         LOGGER.debug("Terminado llenado automático");

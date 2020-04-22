@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jboss.logging.Logger;
 
-import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
+import java.util.List;
 
 @Path("/authentication")
 @RequestScoped
@@ -85,7 +85,6 @@ public class UserRestEndpoint {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Secured
-    @RolesAllowed("PASAJERO")
     public void logout(@Context SecurityContext securityContext) {
         Principal principal = securityContext.getUserPrincipal();
         String username = principal.getName();
@@ -130,6 +129,55 @@ public class UserRestEndpoint {
     @Secured
     public UserDataWeb getUserData() throws GeneralAppException {
         return this.userService.getUserDataWeb();
+    }
+
+    @Path("/user")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UserDataWeb> getAllUSers()  {
+        return this.userService.getAllUsersDataWeb();
+    }
+
+    @Path("/user/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserDataWeb getUserByid(@PathParam("id")Long id)  {
+        return this.userService.getWebById(id);
+    }
+
+    @Path("/updatePass/{id}/{pass}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updatePass(@PathParam("id")Long id,@PathParam("pass") String pass)  {
+        return this.userService.updatePasswordUser(id,pass);
+    }
+
+    @Path("/resetPass/{id}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long resetPass(@PathParam("id")Long id)  {
+        return this.userService.resetPasswordUser(id);
+    }
+    @Path("/user")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long createUserByid(UserDataWeb userDataWeb)  {
+        return this.userService.createUser(userDataWeb);
+    }
+
+    @Path("/user")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Long updateUserByid(UserDataWeb userDataWeb)  {
+        return this.userService.updateUser(userDataWeb);
+    }
+
+
+    @Path("/test}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public void test()  {
+        LOGGER.debug("rest");
     }
 
 
@@ -221,5 +269,7 @@ public class UserRestEndpoint {
     public void testConexion()  {
         return ;
     }
+
+
 
 }
