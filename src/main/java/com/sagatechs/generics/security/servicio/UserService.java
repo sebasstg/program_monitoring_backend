@@ -791,7 +791,7 @@ public class UserService implements Serializable {
     private UserDataWeb userToUserDataWeb(User user){
         UserDataWeb userWeb = new UserDataWeb();
         userWeb.setId(user.getId());
-        userWeb.setNombre(user.getUsername());
+        userWeb.setNombre(user.getName());
         userWeb.setCorreo(user.getEmail());
         userWeb.setUsername(user.getUsername());
         userWeb.setTelefono(user.getPhoneNumber());
@@ -838,7 +838,7 @@ public class UserService implements Serializable {
             this.roleAssigmentDao.save(role);
         }
 
-        this.sendEmailNewPassword(user.getEmail(), pass, user.getUsername());
+       // this.sendEmailNewPassword(user.getEmail(), pass, user.getUsername());
 
 
 
@@ -914,5 +914,28 @@ public class UserService implements Serializable {
         this.sendEmailNewPassword(user.getEmail(), pass, user.getUsername());
 
         return user.getId();
+    }
+
+    public void resetAllPasswords(){
+        for(User user:userDao.findAll()){
+            String pass=this.securityUtils.generateRamdomPassword();
+            byte[] encPass=this.securityUtils.hashPasswordByte(pass, UserService.salt);
+            user.setPassword(encPass);
+            user.setPassword(encPass);
+            this.userDao.save(user);
+            this.sendEmailNewPassword(user.getEmail(), pass, user.getUsername());
+        }
+
+    }
+
+    public void setAllPasswords(){
+        for(User user:userDao.findAll()){
+            String pass=user.getUsername()+"1234";
+            byte[] encPass=this.securityUtils.hashPasswordByte(pass, UserService.salt);
+            user.setPassword(encPass);
+            user.setPassword(encPass);
+            this.userDao.save(user);
+        }
+
     }
 }

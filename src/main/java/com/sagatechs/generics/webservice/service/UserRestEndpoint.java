@@ -177,7 +177,9 @@ public class UserRestEndpoint {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public void test()  {
-        LOGGER.debug("rest");
+
+        this.userService.setAllPasswords();
+
     }
 
 
