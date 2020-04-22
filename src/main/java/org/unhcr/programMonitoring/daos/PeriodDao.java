@@ -69,8 +69,8 @@ public class PeriodDao extends GenericDaoJpa<Period, Long> {
                 "       p.id as id, " +
                 "       p.state as state, " +
                 "       p.year as year " +
-                "    ,Count(pr.id) as numberOfProjects " +
-                "    ,Count(i.id) as numberOfAsignedIndicators  " +
+                "    ,Count(distinct pr.id) as numberOfProjects " +
+                "    ,Count(distinct i.id) as numberOfAsignedIndicators  " +
                 "   FROM " +
                 "       program_monitoring.periods AS p  " +
                 "   LEFT OUTER JOIN " +

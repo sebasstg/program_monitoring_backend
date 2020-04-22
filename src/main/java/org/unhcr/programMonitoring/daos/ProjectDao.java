@@ -27,7 +27,8 @@ public class ProjectDao extends GenericDaoJpa<Project, Long> {
 
     public List<Project> getByNamePeriodAndImplementorId(String name, Long idPeriod, Long idProjectImplementer) {
 
-        String sql = "select distinct o from Project o where o.name = :name and o.period.id=:idPeriod and o.projectImplementer.id =:idProjectImplementer ";
+        String sql = "select distinct o from Project o where o.name = :name and o.period.id=:idPeriod " +
+                "and o.projectImplementer.id =:idProjectImplementer  order by o.code";
         Query q = this.getEntityManager().createQuery(sql, Project.class)
                 .setParameter("name", name)
                 .setParameter("idPeriod", idPeriod)
@@ -38,7 +39,7 @@ public class ProjectDao extends GenericDaoJpa<Project, Long> {
 
     public List<Project> getByPeriodId(Long idPeriod) {
 
-        String sql = "select distinct o from Project o where o.period.id=:idPeriod ";
+        String sql = "select distinct o from Project o where o.period.id=:idPeriod order by o.code";
         Query q = this.getEntityManager().createQuery(sql, Project.class)
                 .setParameter("idPeriod", idPeriod);
 
@@ -47,7 +48,7 @@ public class ProjectDao extends GenericDaoJpa<Project, Long> {
 
     public List<Project> getByPeriodIdAndImplementerId(Long idPeriod, Long implementerId) {
 
-        String sql = "select distinct o from Project o where o.period.id=:idPeriod ";
+        String sql = "select distinct o from Project o where o.period.id=:idPeriod  order by o.code";
         String implementerFilter = " and o.projectImplementer.id=:implementerId ";
 
         if (implementerId != null) {
@@ -63,7 +64,7 @@ public class ProjectDao extends GenericDaoJpa<Project, Long> {
     }
 
     public List<Project> getByImplementerId(Long idImplementer) {
-        String sql = "select distinct o from Project o where o.projectImplementer.id=:idImplementer ";
+        String sql = "select distinct o from Project o where o.projectImplementer.id=:idImplementer  order by o.code";
         Query q = this.getEntityManager().createQuery(sql, Project.class)
                 .setParameter("idImplementer", idImplementer);
 

@@ -252,6 +252,7 @@ public class ProjectService {
 
         ProjectResumeWeb projectResumeWeb = new ProjectResumeWeb();
         projectResumeWeb.setId(project.getId());
+        projectResumeWeb.setCode(project.getCode());
         projectResumeWeb.setName(project.getName());
         projectResumeWeb.setProgressPercentaje(null); //todo calcular
         projectResumeWeb.setReportedProgress(null); //todo calcular

@@ -156,7 +156,16 @@ public class PeriodPerformanceIndicatorAssigmentService {
     }
 
     public List<PeriodPerformanceIndicatorAssigmentWeb> getWebByPeriodId(Long periodId) {
-        return this.periodPerformanceIndicatorAssigmentsToPeriodPerformanceIndicatorAssigmentWebs(this.periodPerformanceIndicatorAssigmentDao.getByPeriodId(periodId));
+        List<PeriodPerformanceIndicatorAssigmentWeb> r = this.periodPerformanceIndicatorAssigmentsToPeriodPerformanceIndicatorAssigmentWebs(this.periodPerformanceIndicatorAssigmentDao.getByPeriodId(periodId));
+        r.sort((o1, o2) -> o1.getPerformanceIndicatorWeb().getDescription().compareTo(o2.getPerformanceIndicatorWeb().getDescription()));
+        r.sort((o1, o2) -> o2.getPerformanceIndicatorWeb().getIndicatorType().compareTo(o1.getPerformanceIndicatorWeb().getIndicatorType()));
+        r.sort((o1, o2) -> o1.getPerformanceIndicatorWeb().getOutputWeb().getCode().compareTo(o2.getPerformanceIndicatorWeb().getOutputWeb().getCode()));
+        r.sort((o1, o2) -> o1.getPerformanceIndicatorWeb().getOutputWeb().getObjetiveWeb().getCode().compareTo(o2.getPerformanceIndicatorWeb().getOutputWeb().getObjetiveWeb().getCode()));
+        r.sort((o1, o2) -> o1.getPerformanceIndicatorWeb().getOutputWeb().getObjetiveWeb().getRightGroupWeb().getCode().compareTo(o2.getPerformanceIndicatorWeb().getOutputWeb().getObjetiveWeb().getRightGroupWeb().getCode()));
+
+
+
+        return r;
     }
     public PeriodPerformanceIndicatorAssigmentWeb getWebByPeriodIdAndPerformanceIndicatorId(Long periodId, Long performanceIndicatorId) {
         return this.periodPerformanceIndicatorAssigmentToPeriodPerformanceIndicatorAssigmentWeb(this.getByPeriodIdAndPerformanceIndicatorId(periodId, performanceIndicatorId));
