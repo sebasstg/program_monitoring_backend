@@ -3,6 +3,7 @@ package org.unhcr.programMonitoring.services;
 import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
 import org.apache.commons.collections4.CollectionUtils;
+import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.IndicatorExecutionDao;
 import org.unhcr.programMonitoring.model.*;
 import org.unhcr.programMonitoring.webServices.model.*;
@@ -14,6 +15,8 @@ import java.util.*;
 
 @Stateless
 public class IndicatorExecutionService {
+
+    private static final Logger LOGGER = Logger.getLogger(IndicatorExecutionService.class);
 
     @Inject
     IndicatorExecutionDao indicatorExecutionDao;
@@ -210,35 +213,9 @@ public class IndicatorExecutionService {
 
         //this.indicatorValueService.
 
-        List<IndicatorValue> values = new ArrayList<>();
-        switch (disaggregationType) {
-            case NONE:
-                values = this.indicatorValueService.createValuesForNoDisaggregation();
-                break;
-            case AGE:
-                values = this.indicatorValueService.createValuesForAgeDisaggregation();
-                break;
-            case GENDER:
-                values = this.indicatorValueService.createValuesForGenderDisaggregation();
-                break;
-            case LOCATION:
-                values = this.indicatorValueService.createValuesForLocationDisaggregation(new ArrayList<>(cantones));
-                break;
-            case GENDER_AGE:
-                values = this.indicatorValueService.createValuesForGenderAgeDisaggregation();
-                break;
-            case GENDER_LOCATION:
-                values = this.indicatorValueService.createValuesForGenderLocationDisaggregation(new ArrayList<>(cantones));
-                break;
-            case AGE_LOCATION:
-                values = this.indicatorValueService.createValuesForAgeLocationDisaggregation(new ArrayList<>(cantones));
-                break;
-            case GENDER_AGE_LOCATION:
-                values = this.indicatorValueService.createValuesForGenderAgeLocationDisaggregation(new ArrayList<>(cantones));
-                break;
-        }
+        List<IndicatorValue> values = this.createIndicatorValues(disaggregationType,cantones);
 
-        this.indicatorValueService.createQuarters(values);
+        //this.indicatorValueService.createQuarters(values);
 
 
         //guardar
@@ -289,6 +266,80 @@ public class IndicatorExecutionService {
 
     }
 
+    private IndicatorExecution createOnlyValuesForIndicatorExecution(IndicatorExecution indicatorExecution) throws GeneralAppException {
+        Set<Canton> cantones= new HashSet<>();
+        for(IndicatorExecutionLocationAssigment indicatorExecutionLocationAssigment:indicatorExecution.getPerformanceIndicatorExecutionLocationAssigments()){
+            cantones.add(indicatorExecutionLocationAssigment.getLocation());
+        }
+
+        List<IndicatorValue> values = this.createIndicatorValues(indicatorExecution.getDisaggregationType(), cantones);
+        this.indicatorValueService.createQuarters(values);
+        Project project= indicatorExecution.getProject();
+        project.addIndicatorExecution(indicatorExecution);
+
+        for (IndicatorValue value : values) {
+            indicatorExecution.addIndicatorValue(value);
+        }
+        List<Quarter> quarters = this.indicatorValueService.createQuarters(values);
+        for (Quarter quarter : quarters) {
+            indicatorExecution.addQuarter(quarter);
+            LOGGER.debug(indicatorExecution.getQuarters().size());
+
+        }
+
+        LOGGER.debug(indicatorExecution.getQuarters().size());
+        //guarda
+
+        for (Quarter quarter :quarters) {
+            this.quarterService.saveOrUpdate(quarter);
+        }
+
+        for (IndicatorValue value : values) {
+            this.indicatorValueService.saveOrUpdate(value);
+        }
+
+        this.projectService.saveOrUpdate(project);
+        indicatorExecution.setTotalExecution(0);
+        indicatorExecution.setExecutionPercentage(0);
+
+        this.saveOrUpdate(indicatorExecution);
+
+
+        return indicatorExecution;
+
+    }
+
+    private List<IndicatorValue> createIndicatorValues(DisaggregationType disaggregationType,Set<Canton> cantones  ){
+        List<IndicatorValue> values = new ArrayList<>();
+        switch (disaggregationType) {
+            case NONE:
+                values = this.indicatorValueService.createValuesForNoDisaggregation();
+                break;
+            case AGE:
+                values = this.indicatorValueService.createValuesForAgeDisaggregation();
+                break;
+            case GENDER:
+                values = this.indicatorValueService.createValuesForGenderDisaggregation();
+                break;
+            case LOCATION:
+                values = this.indicatorValueService.createValuesForLocationDisaggregation(new ArrayList<>(cantones));
+                break;
+            case GENDER_AGE:
+                values = this.indicatorValueService.createValuesForGenderAgeDisaggregation();
+                break;
+            case GENDER_LOCATION:
+                values = this.indicatorValueService.createValuesForGenderLocationDisaggregation(new ArrayList<>(cantones));
+                break;
+            case AGE_LOCATION:
+                values = this.indicatorValueService.createValuesForAgeLocationDisaggregation(new ArrayList<>(cantones));
+                break;
+            case GENDER_AGE_LOCATION:
+                values = this.indicatorValueService.createValuesForGenderAgeLocationDisaggregation(new ArrayList<>(cantones));
+                break;
+        }
+        return values;
+    }
+
 
     public IndicatorExecution saveOrUpdate(IndicatorExecution indicatorExecution) {
         if (indicatorExecution.getId() == null) {
@@ -302,9 +353,24 @@ public class IndicatorExecutionService {
     public List<IndicatorExecutionWeb> getPerformanceIndicatorByProjectId(Long projectId) {
         return this.indicatorExecutionsToIndicatorExecutionWebs(this.indicatorExecutionDao.getPerformanceIndicatorByProjectId(projectId));
     }
-    public List<IndicatorExecutionWeb> getPerformanceIndicatorByProjectIdAndState(Long projectId, State state) {
-        return this.indicatorExecutionsToIndicatorExecutionWebs(this.indicatorExecutionDao.getPerformanceIndicatorByProjectIdAndState(projectId,state));
+    public List<IndicatorExecutionWeb> getPerformanceIndicatorByProjectIdAndState(Long projectId, State state) throws GeneralAppException {
+
+        List<IndicatorExecution> indicatorExecutions = this.indicatorExecutionDao.getPerformanceIndicatorByProjectIdAndState(projectId, state);
+        //compruebo q tenga valores
+
+
+        for(IndicatorExecution indicatorExecution:indicatorExecutions){
+            if(CollectionUtils.isEmpty(indicatorExecution.getIndicatorValues())){
+                // si no tiene valores
+                this.createOnlyValuesForIndicatorExecution(indicatorExecution);
+
+            }
+        }
+
+
+        return this.indicatorExecutionsToIndicatorExecutionWebs(indicatorExecutions);
     }
+
 
 
     public List<IndicatorExecutionWeb> getGeneralIndicatorByProjectId(Long projectId) {

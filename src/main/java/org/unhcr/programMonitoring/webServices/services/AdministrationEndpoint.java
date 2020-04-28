@@ -573,7 +573,7 @@ public class AdministrationEndpoint {
     @Path("/indicatorExecution/performanceByProjectId/actives/{projectId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<IndicatorExecutionWeb> getIndicatorExecutionActivesByProjectId(@PathParam("projectId") Long projectId) {
+    public List<IndicatorExecutionWeb> getIndicatorExecutionActivesByProjectId(@PathParam("projectId") Long projectId) throws GeneralAppException {
         return this.indicatorExecutionService.getPerformanceIndicatorByProjectIdAndState(projectId, State.ACTIVE);
     }
 

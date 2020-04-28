@@ -2,7 +2,8 @@ package org.unhcr.programMonitoring.model;
 
 public enum Gender {
 	MALE("MASCULINO",1),
-	FEMALE("FEMENINO",2);
+	FEMALE("FEMENINO",2),
+	OTHER("OTROS",3);
 
 	private String label;
 
