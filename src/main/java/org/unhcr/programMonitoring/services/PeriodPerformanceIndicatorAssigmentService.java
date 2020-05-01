@@ -4,10 +4,7 @@ import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
 import org.jboss.logging.Logger;
 import org.unhcr.programMonitoring.daos.PeriodPerformanceIndicatorAssigmentDao;
-import org.unhcr.programMonitoring.model.IndicatorType;
-import org.unhcr.programMonitoring.model.PerformanceIndicator;
-import org.unhcr.programMonitoring.model.Period;
-import org.unhcr.programMonitoring.model.PeriodPerformanceIndicatorAssigment;
+import org.unhcr.programMonitoring.model.*;
 import org.unhcr.programMonitoring.webServices.model.PeriodPerformanceIndicatorAssigmentWeb;
 
 import javax.ejb.Stateless;
@@ -31,6 +28,8 @@ public class PeriodPerformanceIndicatorAssigmentService {
     @Inject
     PeriodService periodService;
 
+    @Inject
+    IndicatorExecutionService indicatorExecutionService;
 
     @SuppressWarnings("unused")
     public List<PeriodPerformanceIndicatorAssigmentWeb> getByPeriodoId(Long periodId) {
@@ -57,6 +56,8 @@ public class PeriodPerformanceIndicatorAssigmentService {
         this.validate(periodPerformanceIndicatorAssigment);
 
         this.periodPerformanceIndicatorAssigmentDao.save(periodPerformanceIndicatorAssigment);
+
+
         return periodPerformanceIndicatorAssigment.getId();
     }
 
@@ -84,6 +85,16 @@ public class PeriodPerformanceIndicatorAssigmentService {
         this.validate(periodPerformanceIndicatorAssigmentOrg);
 
         this.periodPerformanceIndicatorAssigmentDao.update(periodPerformanceIndicatorAssigmentOrg);
+
+        //aca solo actualizo los estados de todos los execution de este periodo para este indicador
+
+        List<IndicatorExecution> indicatorExecutions = this.indicatorExecutionService.getByPerformanceIndicatorIdAndPeriodId(periodPerformanceIndicatorAssigmentOrg.getPerformanceIndicator().getId(), periodPerformanceIndicatorAssigmentOrg.getPeriod().getId());
+        for(IndicatorExecution indicatorExecution:indicatorExecutions){
+            indicatorExecution.setState(periodPerformanceIndicatorAssigmentOrg.getState());
+            this.indicatorExecutionService.saveOrUpdate(indicatorExecution);
+        }
+
+
         return periodPerformanceIndicatorAssigmentOrg.getId();
     }
 

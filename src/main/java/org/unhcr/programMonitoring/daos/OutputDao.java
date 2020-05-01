@@ -26,6 +26,14 @@ public class OutputDao extends GenericDaoJpa<Output, Long> {
 
     }
 
+    public List<Output> getByStateOrderedByCode(State state) {
+        String sql = "select distinct o from Output o where o.state=:state order by o.code";
+        Query q = this.getEntityManager().createQuery(sql, Output.class);
+        q.setParameter("state",state);
+        return q.getResultList();
+
+    }
+
 
     public List<Output> getByCode(String code) {
         String sql = "select distinct o from Output o where o.code =:code";

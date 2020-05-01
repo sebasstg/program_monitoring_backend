@@ -4,6 +4,7 @@ import com.sagatechs.generics.exceptions.GeneralAppException;
 import com.sagatechs.generics.persistence.model.State;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jboss.logging.Logger;
+import org.unhcr.programMonitoring.daos.GeneralIndicatorDao;
 import org.unhcr.programMonitoring.daos.ProjectDao;
 import org.unhcr.programMonitoring.daos.SituationAssigmentDao;
 import org.unhcr.programMonitoring.model.*;
@@ -12,6 +13,7 @@ import org.unhcr.programMonitoring.webServices.model.*;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +45,9 @@ public class ProjectService {
 
     @Inject
     ProjectLocationAssigmentService projectLocationAssigmentService;
+
+    @Inject
+    GeneralIndicatorDao generalIndicatorDao;
 
 
     public ProjectWeb getWebById(Long id) {
@@ -196,8 +201,15 @@ public class ProjectService {
         // creo o actualizo los general indicators
 
         this.indicatorExecutionService.createGeneralIndicatorsForProject(project);
+
+        // actualización de actones
+
+        Set<ProjectLocationAssigment> locationsA = project.getProjectLocationAssigments();
+        this.indicatorExecutionService.updateLocationsByProjectId(project.getId(), locationsA);
         return project.getId();
     }
+
+
 
     private void validate(ProjectWeb projectWeb) throws GeneralAppException {
         if (projectWeb == null) {
@@ -254,9 +266,23 @@ public class ProjectService {
         projectResumeWeb.setId(project.getId());
         projectResumeWeb.setCode(project.getCode());
         projectResumeWeb.setName(project.getName());
-        projectResumeWeb.setProgressPercentaje(null); //todo calcular
-        projectResumeWeb.setReportedProgress(null); //todo calcular
-        projectResumeWeb.setLastReportedMonth(null); //todo calcular
+        // obtengo el indicador general principal
+        IndicatorExecution generalIndicator = this.indicatorExecutionService.getMainGeneralIndicators(project.getId());
+        if(generalIndicator!=null){
+            projectResumeWeb.setProgressPercentaje(new BigDecimal(generalIndicator.getExecutionPercentage()));
+            projectResumeWeb.setReportedProgress(generalIndicator.getTotalExecution());
+            Month lastRM = this.indicatorExecutionService.getLastReportedMonth(generalIndicator);
+            if(lastRM!=null){
+                projectResumeWeb.setLastReportedMonth(lastRM.getLabel());
+            }
+
+
+        }else{
+            projectResumeWeb.setProgressPercentaje(null); //todo calcular
+            projectResumeWeb.setReportedProgress(null); //todo calcular
+            projectResumeWeb.setLastReportedMonth(null); //todo calcular
+        }
+
         projectResumeWeb.setProjectImplementer(this.projectImplementerService.projectImplementerToProjectImplementerWeb(project.getProjectImplementer()));
 
         List<Situation> situations = new ArrayList<>();
@@ -276,6 +302,21 @@ public class ProjectService {
     private List<Project> getByPeriodId(Long periodId) {
         return this.projectDao.getByPeriodId(periodId);
     }
+
+    public void updateGeneralIndicatorsForPeriod(Long idPeriod) throws GeneralAppException {
+
+        // obtengo todos los proyectos
+        List<Project> projects = this.getByPeriodId(idPeriod);
+
+        for(Project project: projects){
+            this.indicatorExecutionService.createGeneralIndicatorsForProject(project);
+        }
+
+
+    }
+
+
+
 
     private List<ProjectWeb> getWebByPeriodId(Long periodId) {
         return this.projectsToProjectWebs(this.getByPeriodId(periodId));

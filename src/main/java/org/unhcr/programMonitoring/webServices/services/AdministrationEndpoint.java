@@ -157,6 +157,14 @@ public class AdministrationEndpoint {
         return this.outputService.getAllOutputWebOrderedByCode();
     }
 
+    @Path("/output/actives")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<OutputWeb> getAllactivesOutputs() {
+        return this.outputService.getOutputWebByStateOrderedByCode(State.ACTIVE);
+    }
+
+
     @Path("/output/byPeriodAndObjetiveIdActives/{periodId}/{objetiveId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -582,8 +590,15 @@ public class AdministrationEndpoint {
     @Path("/indicatorExecution/mainGeneralByProjectId/{projectId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<IndicatorExecutionWeb> getMainGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) {
+    public List<IndicatorExecutionWeb> getMainGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) throws GeneralAppException {
         return this.indicatorExecutionService.getGeneralIndicatorByProjectId(projectId);
+    }
+
+    @Path("/indicatorExecution/mainGeneralByProjectId/actives/{projectId}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<IndicatorExecutionWeb> getActiveMainGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) throws GeneralAppException {
+        return this.indicatorExecutionService.getGeneralIndicatorByProjectIdAndState(projectId, State.ACTIVE);
     }
 
 
@@ -591,7 +606,7 @@ public class AdministrationEndpoint {
     @Path("/indicatorExecution/NoGeneralByProjectId/{projectId}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<IndicatorExecutionWeb> getNoGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) {
+    public List<IndicatorExecutionWeb> getNoGeneralIndicatorExecutionByProjectId(@PathParam("projectId") Long projectId) throws GeneralAppException {
         return this.indicatorExecutionService.getGeneralIndicatorByProjectId(projectId);
     }
 

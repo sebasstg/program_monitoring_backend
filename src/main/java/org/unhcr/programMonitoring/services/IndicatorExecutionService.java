@@ -48,6 +48,9 @@ public class IndicatorExecutionService {
     @Inject
     PeriodPerformanceIndicatorAssigmentService periodPerformanceIndicatorAssigmentService;
 
+    @Inject
+    IndicatorExecutionLocationAssigmenService getIndicatorExecutionLocationAssigmenService;
+
     private List<IndicatorExecutionWeb> indicatorExecutionsToIndicatorExecutionWebs(List<IndicatorExecution> indicatorExecutions) {
         List<IndicatorExecutionWeb> r = new ArrayList<>();
         for (IndicatorExecution indicatorExecution : indicatorExecutions) {
@@ -213,7 +216,7 @@ public class IndicatorExecutionService {
 
         //this.indicatorValueService.
 
-        List<IndicatorValue> values = this.createIndicatorValues(disaggregationType,cantones);
+        List<IndicatorValue> values = this.createIndicatorValues(disaggregationType, cantones);
 
         //this.indicatorValueService.createQuarters(values);
 
@@ -267,14 +270,14 @@ public class IndicatorExecutionService {
     }
 
     private IndicatorExecution createOnlyValuesForIndicatorExecution(IndicatorExecution indicatorExecution) throws GeneralAppException {
-        Set<Canton> cantones= new HashSet<>();
-        for(IndicatorExecutionLocationAssigment indicatorExecutionLocationAssigment:indicatorExecution.getPerformanceIndicatorExecutionLocationAssigments()){
+        Set<Canton> cantones = new HashSet<>();
+        for (IndicatorExecutionLocationAssigment indicatorExecutionLocationAssigment : indicatorExecution.getPerformanceIndicatorExecutionLocationAssigments()) {
             cantones.add(indicatorExecutionLocationAssigment.getLocation());
         }
 
         List<IndicatorValue> values = this.createIndicatorValues(indicatorExecution.getDisaggregationType(), cantones);
         this.indicatorValueService.createQuarters(values);
-        Project project= indicatorExecution.getProject();
+        Project project = indicatorExecution.getProject();
         project.addIndicatorExecution(indicatorExecution);
 
         for (IndicatorValue value : values) {
@@ -290,7 +293,7 @@ public class IndicatorExecutionService {
         LOGGER.debug(indicatorExecution.getQuarters().size());
         //guarda
 
-        for (Quarter quarter :quarters) {
+        for (Quarter quarter : quarters) {
             this.quarterService.saveOrUpdate(quarter);
         }
 
@@ -309,7 +312,7 @@ public class IndicatorExecutionService {
 
     }
 
-    private List<IndicatorValue> createIndicatorValues(DisaggregationType disaggregationType,Set<Canton> cantones  ){
+    private List<IndicatorValue> createIndicatorValues(DisaggregationType disaggregationType, Set<Canton> cantones) {
         List<IndicatorValue> values = new ArrayList<>();
         switch (disaggregationType) {
             case NONE:
@@ -353,14 +356,15 @@ public class IndicatorExecutionService {
     public List<IndicatorExecutionWeb> getPerformanceIndicatorByProjectId(Long projectId) {
         return this.indicatorExecutionsToIndicatorExecutionWebs(this.indicatorExecutionDao.getPerformanceIndicatorByProjectId(projectId));
     }
+
     public List<IndicatorExecutionWeb> getPerformanceIndicatorByProjectIdAndState(Long projectId, State state) throws GeneralAppException {
 
         List<IndicatorExecution> indicatorExecutions = this.indicatorExecutionDao.getPerformanceIndicatorByProjectIdAndState(projectId, state);
         //compruebo q tenga valores
 
 
-        for(IndicatorExecution indicatorExecution:indicatorExecutions){
-            if(CollectionUtils.isEmpty(indicatorExecution.getIndicatorValues())){
+        for (IndicatorExecution indicatorExecution : indicatorExecutions) {
+            if (CollectionUtils.isEmpty(indicatorExecution.getIndicatorValues())) {
                 // si no tiene valores
                 this.createOnlyValuesForIndicatorExecution(indicatorExecution);
 
@@ -372,9 +376,34 @@ public class IndicatorExecutionService {
     }
 
 
+    public List<IndicatorExecutionWeb> getGeneralIndicatorByProjectId(Long projectId) throws GeneralAppException {
+        List<IndicatorExecution> indicatorExecutions =this.indicatorExecutionDao.getGeneralIndicators(projectId);
+        for (IndicatorExecution indicatorExecution : indicatorExecutions) {
+            if (CollectionUtils.isEmpty(indicatorExecution.getIndicatorValues())) {
+                // si no tiene valores
+                this.createOnlyValuesForIndicatorExecution(indicatorExecution);
 
-    public List<IndicatorExecutionWeb> getGeneralIndicatorByProjectId(Long projectId) {
-        return this.indicatorExecutionsToIndicatorExecutionWebs(this.indicatorExecutionDao.getGeneralIndicators(projectId));
+            }
+        }
+
+        return this.indicatorExecutionsToIndicatorExecutionWebs(indicatorExecutions);
+    }
+
+    public List<IndicatorExecutionWeb> getGeneralIndicatorByProjectIdAndState(Long projectId, State state) throws GeneralAppException {
+        List<IndicatorExecution> indicatorExecutions =this.indicatorExecutionDao.getGeneralIndicatorsAndState(projectId,state);
+        for (IndicatorExecution indicatorExecution : indicatorExecutions) {
+            if (CollectionUtils.isEmpty(indicatorExecution.getIndicatorValues())) {
+                // si no tiene valores
+                this.createOnlyValuesForIndicatorExecution(indicatorExecution);
+
+            }
+        }
+
+        return this.indicatorExecutionsToIndicatorExecutionWebs(indicatorExecutions);
+    }
+
+    public IndicatorExecution getMainGeneralIndicators(Long projectId) {
+        return this.indicatorExecutionDao.getMainGeneralIndicators(projectId);
     }
 
     public void createGeneralIndicatorsForProject(Project project) throws GeneralAppException {
@@ -437,6 +466,106 @@ public class IndicatorExecutionService {
 
     public IndicatorExecution getByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId) {
         return this.indicatorExecutionDao.getByGeneralIndicatorIdAndProjectId(generalIndicatorId, projectId);
+    }
+
+    public List<IndicatorExecution> getByPerformanceIndicatorIdAndPeriodId(Long performanceIndicatorId, Long periodId) {
+        return this.indicatorExecutionDao.getByPerformanceIndicatorIdAndPeriodId(performanceIndicatorId, periodId);
+    }
+
+    public Month getLastReportedMonth(
+            IndicatorExecution indicatorExecution
+    ) {
+        Month lastMonth = null;
+        Set<IndicatorValue> values = indicatorExecution.getIndicatorValues();
+        if (values == null || values.size() > 1) {
+            for (IndicatorValue val : values) {
+
+                if (val.getValue() != null) {
+                    if (lastMonth == null) {
+                        lastMonth = val.getMonth();
+                    } else {
+                        if (lastMonth.getOrder() < val.getMonth().getOrder()) {
+                            lastMonth = val.getMonth();
+                        }
+                    }
+                }
+
+            }
+        }
+        return lastMonth;
+    }
+
+    public void updateLocationsByProjectId(Long projectId, Set<ProjectLocationAssigment> cantonesAssig) throws GeneralAppException {
+
+        List<IndicatorExecution> indiEx = this.indicatorExecutionDao.getByProjectId(projectId);
+
+
+
+        for(IndicatorExecution indicatorExecution:indiEx){
+            Set<ProjectLocationAssigment> newCantons= new HashSet<>();
+            Set<IndicatorExecutionLocationAssigment> locationsInd = indicatorExecution.getPerformanceIndicatorExecutionLocationAssigments();
+            //  controlo por cada cantón
+            for(ProjectLocationAssigment cantonesA:cantonesAssig){
+                boolean found=false;
+                for(IndicatorExecutionLocationAssigment locationsI:locationsInd){
+                    if(cantonesA.getLocation().getId().equals(locationsI.getLocation().getId())){
+                        found=true;
+                        locationsI.setState(cantonesA.getState());
+                        if(locationsI.getState()==null){
+                            LOGGER.debug("???????");
+                        }
+                    }
+                }
+                if(!found){
+                    newCantons.add(cantonesA);
+                }
+
+            }
+
+            for(ProjectLocationAssigment projectLocationAssigment:newCantons){
+                IndicatorExecutionLocationAssigment locaAssignew= new IndicatorExecutionLocationAssigment();
+                locaAssignew.setState(projectLocationAssigment.getState());
+                locaAssignew.setLocation(projectLocationAssigment.getLocation());
+                indicatorExecution.addPerformanceIndicatorExecutionLocationAssigments(locaAssignew);
+                List<Canton> cantones= new ArrayList<>();
+                cantones.add(projectLocationAssigment.getLocation());
+                List<IndicatorValue> values= new ArrayList<>();
+                switch (indicatorExecution.getDisaggregationType()){
+                    case AGE_LOCATION:
+                        values=this.indicatorValueService.createValuesForAgeLocationDisaggregation(cantones);
+                        break;
+                    case GENDER_LOCATION:
+                        values=this.indicatorValueService.createValuesForGenderLocationDisaggregation(cantones);
+                        break;
+                    case LOCATION:
+                        values=this.indicatorValueService.createValuesForLocationDisaggregation(cantones);
+                        break;
+                    case GENDER_AGE_LOCATION:
+                        values=this.indicatorValueService.createValuesForGenderAgeLocationDisaggregation(cantones);
+                        break;
+                }
+                this.indicatorValueService.updateQuarters(values,indicatorExecution);
+                for(IndicatorValue indicatorValue:values){
+                    indicatorExecution.addIndicatorValue(indicatorValue);
+                    this.indicatorValueService.saveOrUpdate(indicatorValue);
+                }
+                for(Quarter quarter:indicatorExecution.getQuarters()){
+                    this.quarterService.saveOrUpdate(quarter);
+                }
+
+            }
+            for(IndicatorExecutionLocationAssigment indicatorExecutionLocationAssigment:indicatorExecution.getPerformanceIndicatorExecutionLocationAssigments()){
+                if(indicatorExecutionLocationAssigment.getState()==null){
+                    LOGGER.debug("???????");
+                }
+                this.indicatorExecutionLocationAssigmenService.saveOrUpdate(indicatorExecutionLocationAssigment);
+            }
+            this.indicatorExecutionDao.update(indicatorExecution);
+
+
+        }
+
+
     }
 
 }

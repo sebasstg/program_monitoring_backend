@@ -30,6 +30,9 @@ public class GeneralIndicatorService {
     @Inject
     PeriodService periodService;
 
+    @Inject
+    ProjectService projectService;
+
 
     public List<GeneralIndicatorWeb> getWebByPeriodId(Long periodId) {
         return this.generalIndicatorsToGeneralIndicatorWebs(this.generalIndicatorDao.getByPeriodId(periodId));
@@ -49,9 +52,18 @@ public class GeneralIndicatorService {
 
     public Long save(GeneralIndicatorWeb generalIndicatorWeb) throws GeneralAppException {
         this.validate(generalIndicatorWeb);
-        this.generalIndicatorDao.save(this.generalIndicatorWebToGeneralIndicator(generalIndicatorWeb));
+
+
+        GeneralIndicator generlIndicator = this.generalIndicatorDao.save(this.generalIndicatorWebToGeneralIndicator(generalIndicatorWeb));
+        // actualizo los indicadores generales para todos
+
+        this.projectService.updateGeneralIndicatorsForPeriod(generlIndicator.getPeriod().getId());
         return generalIndicatorWeb.getId();
     }
+
+
+
+
 
     public Long update(GeneralIndicatorWeb generalIndicatorWeb) throws GeneralAppException {
         this.validate(generalIndicatorWeb);
@@ -82,6 +94,8 @@ public class GeneralIndicatorService {
         }
         org.setState(generalIndicatorWeb.getState());
         this.generalIndicatorDao.update(org);
+
+        this.projectService.updateGeneralIndicatorsForPeriod(generalIndicatorWeb.getPeriod().getId());
 
         return generalIndicatorWeb.getId();
     }

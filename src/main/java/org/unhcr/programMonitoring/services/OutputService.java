@@ -35,6 +35,13 @@ public class OutputService {
         return this.outputsToOutputWebs(outputs);
     }
 
+
+    public List<OutputWeb> getOutputWebByStateOrderedByCode(State state) {
+
+        List<Output> outputs = this.outputDao.getByStateOrderedByCode(state);
+        return this.outputsToOutputWebs(outputs);
+    }
+
     private List<Output> getAllOrderedByCode() {
         return this.outputDao.getAllOrderedByCode();
     }

@@ -24,10 +24,10 @@ public class IndicatorValueService {
     @Inject
     CantonService cantonService;
 
-    public IndicatorValue saveOrUpdate(IndicatorValue indicatorValue){
-        if(indicatorValue.getId()==null){
+    public IndicatorValue saveOrUpdate(IndicatorValue indicatorValue) {
+        if (indicatorValue.getId() == null) {
             return this.indicatorValueDao.save(indicatorValue);
-        }else{
+        } else {
             return this.indicatorValueDao.update(indicatorValue);
         }
     }
@@ -248,32 +248,93 @@ public class IndicatorValueService {
         return result;
     }
 
-    public IndicatorValueWeb indicatorValueToIndicatorValueWeb(IndicatorValue indicatorValue){
-        if(indicatorValue==null) return null;
+    public List<Quarter> updateQuarters(List<IndicatorValue> values, IndicatorExecution indicatorExecution) throws GeneralAppException {
+        Quarter q1=null;
+        Quarter q2=null;
+        Quarter q3=null;
+        Quarter q4=null;
+
+        for (Quarter quarter : indicatorExecution.getQuarters()) {
+            switch (quarter.getQuarterNumber()) {
+                case I:
+                    q1 = quarter;
+                    break;
+                case II:
+                    q2 = quarter;
+                    break;
+                case III:
+                    q3 = quarter;
+                    break;
+                case IV:
+                    q4 = quarter;
+                    break;
+
+            }
+        }
+
+        for (IndicatorValue value : values) {
+            switch (value.getMonth()) {
+                case JANUARY:
+                case FEBRUARY:
+                case MARCH:
+                    q1.addIndicatorValue(value);
+                    break;
+                case APRIL:
+                case MAY:
+                case JUNE:
+                    q2.addIndicatorValue(value);
+                    break;
+                case JULY:
+                case AUGUST:
+                case SEPTEMBER:
+                    q3.addIndicatorValue(value);
+                    break;
+
+                case OCTOBER:
+                case NOVEMBER:
+                case DECEMBER:
+                    q4.addIndicatorValue(value);
+                    break;
+                default:
+                    throw new GeneralAppException("Error al crear el trimestre. Valor sin mes");
+            }
+        }
+
+        List<Quarter> result = new ArrayList<>();
+        result.add(q1);
+        result.add(q2);
+        result.add(q3);
+        result.add(q4);
+        return result;
+    }
+
+    public IndicatorValueWeb indicatorValueToIndicatorValueWeb(IndicatorValue indicatorValue) {
+        if (indicatorValue == null) return null;
         CantonWeb cantonWeb = this.cantonService.cantonToCantonWeb(indicatorValue.getLocation());
-        IndicatorValueWeb i = new IndicatorValueWeb(indicatorValue.getId(),indicatorValue.getMonth(),indicatorValue.getGender(),indicatorValue.getAgeGroup(),
-                cantonWeb,indicatorValue.getValue(), indicatorValue.getNumeratorValue(), indicatorValue.getDenominatorValue()
+        IndicatorValueWeb i = new IndicatorValueWeb(indicatorValue.getId(), indicatorValue.getMonth(), indicatorValue.getGender(), indicatorValue.getAgeGroup(),
+                cantonWeb, indicatorValue.getValue(), indicatorValue.getNumeratorValue(), indicatorValue.getDenominatorValue()
         );
         return i;
     }
 
-    public List<IndicatorValueWeb> indicatorValueToIndicatorValuesWebs(List<IndicatorValue> indicatorValues){
-        List<IndicatorValueWeb> r=new ArrayList<>();
+    public List<IndicatorValueWeb> indicatorValueToIndicatorValuesWebs(List<IndicatorValue> indicatorValues) {
+        List<IndicatorValueWeb> r = new ArrayList<>();
 
-        for(IndicatorValue indicatorValue:indicatorValues){
+        for (IndicatorValue indicatorValue : indicatorValues) {
             r.add(this.indicatorValueToIndicatorValueWeb(indicatorValue));
         }
         return r;
     }
-    public IndicatorValue find(Long id){
+
+    public IndicatorValue find(Long id) {
         return this.indicatorValueDao.find(id);
     }
 
-    public List<IndicatorValue> getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId){
-        return this.indicatorValueDao.getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(generalIndicatorId,projectId);
+    public List<IndicatorValue> getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(Long generalIndicatorId, Long projectId) {
+        return this.indicatorValueDao.getSubIndicatorValuesByGeneralIndicatorIdAndProjectId(generalIndicatorId, projectId);
     }
 
-    public List<IndicatorValue> getByIndicatorExecutionId(Long indicatorExecutionId){
+    public List<IndicatorValue> getByIndicatorExecutionId(Long indicatorExecutionId) {
         return this.indicatorValueDao.getByIndicatorExecutionId(indicatorExecutionId);
     }
 

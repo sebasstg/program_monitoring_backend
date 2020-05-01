@@ -2,6 +2,8 @@ package org.unhcr.programMonitoring.model;
 
 import com.sagatechs.generics.persistence.model.BaseEntity;
 import com.sagatechs.generics.persistence.model.State;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.persistence.*;
 
@@ -57,5 +59,30 @@ public class IndicatorExecutionLocationAssigment extends BaseEntity<Long> {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (!(o instanceof IndicatorExecutionLocationAssigment)) return false;
+
+        IndicatorExecutionLocationAssigment that = (IndicatorExecutionLocationAssigment) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+
+                .append(indicatorExecution, that.indicatorExecution)
+                .append(location, that.location)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .appendSuper(super.hashCode())
+                .append(indicatorExecution)
+                .append(location)
+                .toHashCode();
     }
 }
