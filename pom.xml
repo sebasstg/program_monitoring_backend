@@ -21,7 +21,7 @@
         <primefaces.version>7.0</primefaces.version>
         <primefaces-extensions.version>7.0.1</primefaces-extensions.version>
         <omnifaces.version>3.3</omnifaces.version>
-        <version.commons-io>2.6</version.commons-io>
+        <version.commons-io>2.7</version.commons-io>
         <version.apache.poi>4.1.0</version.apache.poi>
         <version.itext>2.1.7</version.itext>
         <version.commons-fileupload>1.3.3</version.commons-fileupload>
